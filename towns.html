@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>迭部县乡镇介绍 - 多尺度乡土地理教学</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+    background: #f4f6f4;
+    color: #1f2d1f;
+    line-height: 1.6;
+  }
+
+  header {
+    background: #2c5f2d;
+    color: #fff;
+    padding: 28px 20px;
+    text-align: center;
+  }
+  header h1 { font-size: 26px; letter-spacing: 2px; }
+  header p  { font-size: 14px; opacity: .85; margin-top: 6px; }
+
+  .top-nav {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 4px;
+    background: #1d4d1e;
+    padding: 0 12px;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 6px rgba(0,0,0,.12);
+  }
+  .top-nav a {
+    color: #d8e8d8;
+    text-decoration: none;
+    font-size: 14px;
+    padding: 12px 14px;
+    display: block;
+    border-bottom: 3px solid transparent;
+    transition: color .15s, border-color .15s;
+  }
+  .top-nav a:hover { color: #fff; border-bottom-color: #8fc98f; }
+  .top-nav a.active { color: #fff; border-bottom-color: #f0c040; font-weight: 600; }
+
+  .content-container {
+    max-width: 1100px;
+    margin: 32px auto;
+    padding: 0 20px;
+  }
+
+  .section-title {
+    font-size: 22px;
+    color: #2c5f2d;
+    border-left: 5px solid #2c5f2d;
+    padding-left: 12px;
+    margin-bottom: 20px;
+  }
+
+  .back-btn-wrapper { margin-bottom: 20px; }
+  .back-btn {
+    display: inline-block;
+    color: #2c5f2d;
+    text-decoration: none;
+    font-size: 14px;
+    border: 1px solid #2c5f2d;
+    padding: 6px 15px;
+    border-radius: 20px;
+    transition: background 0.2s;
+  }
+  .back-btn:hover { background: #2c5f2d; color: #fff; }
+
+  /* ====== 左右分栏布局 ====== */
+  .towns-layout {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 30px;
+    min-height: 500px;
+  }
+
+  /* 左侧乡镇列表 */
+  .towns-sidebar {
+    width: 30%;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,.05);
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .sidebar-title {
+    font-size: 15px;
+    color: #7a857a;
+    margin-bottom: 5px;
+    padding-left: 5px;
+    border-bottom: 1px dashed #d0dcd0;
+    padding-bottom: 8px;
+  }
+  .town-btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #f9fbf9;
+    border: 1px solid #e0e7e0;
+    border-radius: 6px;
+    padding: 10px 15px;
+    cursor: pointer;
+    font-size: 15px;
+    color: #1d4d1e;
+    transition: all 0.2s;
+  }
+  .town-btn:hover {
+    background: #eef3ee;
+    border-color: #8fc98f;
+  }
+  .town-btn.active {
+    background: #2c5f2d;
+    color: #fff;
+    border-color: #2c5f2d;
+  }
+  .town-btn.active .badge {
+    background: #fff;
+    color: #2c5f2d;
+  }
+  .badge {
+    font-size: 12px;
+    background: #e0e7e0;
+    padding: 2px 8px;
+    border-radius: 10px;
+    color: #555;
+  }
+
+  /* 右侧详情展示 */
+  .town-display {
+    width: 70%;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,.05);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* 图片区域：支持一张或多张并排 */
+  .town-img-area {
+    display: flex;
+    gap: 4px;
+    background: #eef3ee;
+  }
+  .town-img-item {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .town-img-item img {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    display: block;
+    background: #eef3ee;
+  }
+  .town-img-caption {
+    font-size: 12px;
+    color: #5a6a5a;
+    text-align: center;
+    padding: 4px 6px;
+    background: #f4f6f4;
+    border-top: 1px solid #e0e7e0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .town-info-content {
+    padding: 25px;
+    flex: 1;
+  }
+  .town-info-content h2 {
+    font-size: 24px;
+    color: #1d4d1e;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .town-meta {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+  .meta-item {
+    background: #eef3ee;
+    padding: 8px 15px;
+    border-radius: 6px;
+    font-size: 13px;
+    color: #444;
+  }
+  .meta-item strong { color: #2c5f2d; }
+  .town-desc {
+    font-size: 15px;
+    color: #444;
+    margin-bottom: 15px;
+    text-indent: 2em;
+  }
+  .town-highlight {
+    background: #fdf6f0;
+    border-left: 4px solid #f0c040;
+    padding: 15px;
+    font-size: 14px;
+    color: #8a2b1d;
+    border-radius: 0 6px 6px 0;
+    margin-top: auto;
+  }
+
+  footer {
+    text-align: center;
+    padding: 24px 20px 40px;
+    font-size: 12px;
+    color: #7a857a;
+  }
+
+  @media (max-width: 760px) {
+    .towns-layout { flex-direction: column; }
+    .towns-sidebar { width: 100%; flex-direction: row; overflow-x: auto; white-space: nowrap; }
+    .sidebar-title { display: none; }
+    .town-btn { flex-shrink: 0; }
+    .town-display { width: 100%; }
+    .town-img-area { flex-direction: column; }
+    .town-img-item img { height: 180px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>迭部县乡镇介绍</h1>
+  <p>从县域到乡镇 · 认识家乡的每一寸土地</p>
+</header>
+
+<nav class="top-nav">
+  <a href="index.html">首页</a>
+  <a href="global.html">全球尺度</a>
+  <a href="china.html">中国尺度</a>
+  <a href="province.html">省域尺度</a>
+  <a href="county.html" class="active">县域尺度</a>
+  <a href="red.html">长征精神</a>
+  <a href="message.html">互动留言</a>
+</nav>
+
+<main class="content-container">
+
+  <div class="back-btn-wrapper">
+    <a href="county.html" class="back-btn">← 返回县域尺度（行政区划）</a>
+  </div>
+
+  <h2 class="section-title">点击左侧名称，查看乡镇详情</h2>
+
+  <div class="towns-layout">
+    <!-- 左侧：乡镇列表 -->
+    <div class="towns-sidebar">
+      <div class="sidebar-title">迭部县 5镇 6乡</div>
+      
+      <div class="town-btn active" onclick="showTown('diega', event)">
+        电尕镇 <span class="badge">镇</span>
+      </div>
+      <div class="town-btn" onclick="showTown('yiwa', event)">
+        益哇镇 <span class="badge">镇</span>
+      </div>
+      <div class="town-btn" onclick="showTown('wangzang', event)">
+        旺藏镇 <span class="badge">镇</span>
+      </div>
+      <div class="town-btn" onclick="showTown('lazikou', event)">
+        腊子口镇 <span class="badge">镇</span>
+      </div>
+      <div class="town-btn" onclick="showTown('luoda', event)">
+        洛大镇 <span class="badge">镇</span>
+      </div>
+      <div class="town-btn" onclick="showTown('kaba', event)">
+        卡坝乡 <span class="badge" style="background:#e0e7e0; color:#1d4d1e;">乡</span>
+      </div>
+      <div class="town-btn" onclick="showTown('dala', event)">
+        达拉乡 <span class="badge" style="background:#e0e7e0; color:#1d4d1e;">乡</span>
+      </div>
+      <div class="town-btn" onclick="showTown('niao', event)">
+        尼傲乡 <span class="badge" style="background:#e0e7e0; color:#1d4d1e;">乡</span>
+      </div>
+      <div class="town-btn" onclick="showTown('axa', event)">
+        阿夏乡 <span class="badge" style="background:#e0e7e0; color:#1d4d1e;">乡</span>
+      </div>
+      <div class="town-btn" onclick="showTown('duoer', event)">
+        多儿乡 <span class="badge" style="background:#e0e7e0; color:#1d4d1e;">乡</span>
+      </div>
+      <div class="town-btn" onclick="showTown('sangba', event)">
+        桑坝乡 <span class="badge" style="background:#e0e7e0; color:#1d4d1e;">乡</span>
+      </div>
+    </div>
+
+    <!-- 右侧：详情展示 -->
+    <div class="town-display">
+      <div id="town-img-area" class="town-img-area">
+        <!-- 图片由 JS 动态生成 -->
+      </div>
+      <div class="town-info-content">
+        <h2 id="town-name">电尕镇</h2>
+        <div class="town-meta">
+          <div class="meta-item">行政级别：<strong id="town-level">镇</strong></div>
+          <div class="meta-item">地理特征：<strong id="town-geo">白龙江河谷</strong></div>
+        </div>
+        <p class="town-desc" id="town-desc">
+          电尕镇是迭部县人民政府驻地，是全县的政治、经济、文化中心。镇名“电尕”为藏语音译。这里地处白龙江干流河谷，海拔相对较低，气候较为温和。作为县城，电尕镇集中了全县主要的公共服务设施和商业网点，是连接县域内外的重要交通枢纽。
+        </p>
+        <div class="town-highlight" id="town-highlight">
+          <strong>📍 地理看点：</strong>典型的河谷城镇，依托白龙江水源和交通干线发展。观察县城为何选址在此处，理解地形和水源对聚落选址的决定性影响。
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  数据来源：迭部县人民政府 · 教学用途网站
+</footer>
+
+<script>
+  // 乡镇数据字典
+  // imgs 为数组，每个元素 { src: 图片路径, alt: 图片标注图名 }
+  const townsData = {
+    diega: {
+      name: "电尕镇", level: "镇", geo: "白龙江干流河谷",
+      imgs: [
+        { src: "images/town-dianga.jpg", alt: "航拍电尕" }
+      ],
+      desc: "电尕镇是迭部县人民政府驻地，是全县的政治、经济、文化中心。镇名“电尕”为藏语音译。这里地处白龙江干流河谷，海拔相对较低，气候较为温和。作为县城，电尕镇集中了全县主要的公共服务设施和商业网点，是连接县域内外的重要交通枢纽。",
+      highlight: "典型的河谷城镇，依托白龙江水源和交通干线发展。观察县城为何选址在此处，理解地形和水源对聚落选址的决定性影响。"
+    },
+    yiwa: {
+      name: "益哇镇", level: "镇", geo: "益哇沟（白龙江支流）",
+      imgs: [
+        { src: "images/town-yiwa-1.jpg", alt: "扎尕那村落" },
+        { src: "images/town-yiwa-2.jpg", alt: "扎尕那榻板房" }
+      ],
+      desc: "益哇镇位于迭部县城西北部，因境内的益哇沟而得名。这里是著名景区扎尕那的所在地。益哇镇以藏族聚居为主，保留了丰富的传统藏族民俗文化。近年来，依托扎尕那的全球知名度，益哇镇的文旅产业和特色民宿经济发展迅速。",
+      highlight: "【重点案例】扎尕那村就在这里！这里是全球重要农业文化遗产（GIAHS）所在地，也是“农林牧复合系统”的最佳观察点。"
+    },
+    wangzang: {
+      name: "旺藏镇", level: "镇", geo: "白龙江干流河谷",
+      imgs: [
+        { src: "images/town-wangzang.jpg", alt: "红色次日那" }
+      ],
+      desc: "旺藏镇地处白龙江沿岸，是红军长征途经的重要区域，境内有茨日那毛泽东旧居等红色遗迹。旺藏镇也是迭部县的农业大镇，盛产苹果、核桃等经济林果，近年来通过“红色旅游+特色农业”的模式，带动了当地群众增收致富。",
+      highlight: "红色文化与特色农业结合的典范。央视报道中提到，旺藏镇有650余户人家种植苹果，面积达3600亩。"
+    },
+    lazikou: {
+      name: "腊子口镇", level: "镇", geo: "腊子沟峡谷地带",
+      imgs: [
+        { src: "images/town-lazikou.jpg", alt: "腊子口战役纪念碑" }
+      ],
+      desc: "腊子口镇因著名的“天险腊子口”而得名。这里是红军长征攻克腊子口战役的发生地，地势险要，峡谷幽深。腊子口战役纪念馆是全国爱国主义教育基地。如今，腊子口镇依托红色旅游资源，大力发展红色研学旅游，同时依托山地资源发展中药材种植。",
+      highlight: "地形如何决定军事行动？在这里可以实地考察“一夫当关，万夫莫开”的峡谷地貌，是理解地形对人类活动影响的绝佳课堂。"
+    },
+    luoda: {
+      name: "洛大镇", level: "镇", geo: "白龙江下游河谷",
+      imgs: [
+        { src: "images/town-luoda.jpg", alt: "洛大樱桃" }
+      ],
+      desc: "洛大镇位于迭部县东南部，地处白龙江下游。这里气候相对温和，是迭部县重要的粮食和蔬菜产区，盛产洛大樱桃和辣椒，也是重要的藏中药材种植地。洛大镇也是连接迭部与陇南的重要门户，交通区位优势明显。近年来，洛大镇积极推进美丽乡村建设，人居环境得到显著改善。",
+      highlight: "观察白龙江下游河谷的农业形态，对比上游的高寒牧业，理解海拔和气候对农业类型的直接影响。"
+    },
+    kaba: {
+      name: "卡坝乡", level: "乡", geo: "白龙江支流卡坝沟",
+      imgs: [
+        { src: "images/town-kaba.jpg", alt: "珍珠马铃薯" }
+      ],
+      desc: "卡坝乡位于迭部县西北部，地处卡坝沟流域。这里森林资源丰富，是长江上游重要的水源涵养林区。卡坝乡以林业和畜牧业为主，近年来也在积极探索林下经济（如羊肚菌种植）和中藏药材种植。",
+      highlight: "关注“林下经济”。高森林覆盖率如何转化为经济优势？羊肚菌等林下作物的生长需要怎样的微气候环境？"
+    },
+    dala: {
+      name: "达拉乡", level: "乡", geo: "达拉沟流域",
+      imgs: [
+        { src: "images/town-dala.jpg", alt: "俄界会议" }
+      ],
+      desc: "达拉乡位于迭部县东南部，是著名的“俄界会议”召开地（高吉村）；同时也是连接九寨沟景区的路线之一。1935年9月，中共中央在此召开了政治局扩大会议，确定了北上抗日的方针。达拉乡红色文化底蕴深厚，同时拥有优美的自然风光，高吉村现已发展为全国乡村旅游重点村。",
+      highlight: "俄界会议为何选在这里召开？从地理位置上看，达拉沟是红军走出草地后进入甘肃的重要通道，具有极高的军事和地理战略意义。"
+    },
+    niao: {
+      name: "尼傲乡", level: "乡", geo: "白龙江干流河谷",
+      imgs: [
+        { src: "images/town-niao.jpg", alt: "乡村" }
+      ],
+      desc: "尼傲乡位于迭部县中部，沿白龙江干流分布。这里海拔相对较低，气候温和，适宜农作物生长。尼傲乡以农业为主，主要种植青稞、小麦、豆类等作物，同时也有一定规模的畜牧业。乡内自然风光秀丽，白龙江穿境而过。",
+      highlight: "典型的干流河谷农业乡。引导学生观察地图，思考为什么这里的村落和农田都沿着白龙江呈带状分布。"
+    },
+    axa: {
+      name: "阿夏乡", level: "乡", geo: "阿夏沟流域",
+      imgs: [
+        { src: "images/town-axa.jpg", alt: "阿夏牧场" }
+      ],
+      desc: "阿夏乡位于迭部县南部，地处阿夏沟流域。这里森林茂密，生态环境原始，是大熊猫、雪豹等珍稀野生动物的栖息地。阿夏乡以生态保护和林业为主，近年来也在探索生态旅游和自然教育。",
+      highlight: "生物多样性热点区域。为什么阿夏乡能成为珍稀动物的家园？这与当地完整的垂直自然带谱和茂密的森林植被密不可分。"
+    },
+    duoer: {
+      name: "多儿乡", level: "乡", geo: "多儿沟流域",
+      imgs: [
+        { src: "images/town-duoer.jpg", alt: "洋布水磨群" }
+      ],
+      desc: "多儿乡位于迭部县东南部，地处多儿沟流域。这里山高谷深，森林覆盖率高，生物多样性丰富。多儿乡以林业和畜牧业为主，保留了较为完整的藏族传统文化和民俗风情。",
+      highlight: "高峡谷地貌下的乡村生活。观察多儿沟的地形特点，思考在这样的地形条件下，村落如何选址，交通如何发展。"
+    },
+    sangba: {
+      name: "桑坝乡", level: "乡", geo: "桑坝沟流域",
+      imgs: [
+        { src: "images/town-sangba.jpg", alt: "骨麻湖" }
+      ],
+      desc: "桑坝乡位于迭部县东部，地处桑坝沟流域。这里地势较高，以高山草甸和畜牧业为主。桑坝乡是迭部县重要的畜牧业基地，蕨麻猪等特色畜产品享有盛名。",
+      highlight: "高寒草甸畜牧业的代表。结合“迭部特产（蕨麻猪）”模块，理解为什么高山草甸适合发展放牧型畜牧业。"
+    }
+  };
+
+  // 渲染右侧图片区域（支持一张或多张）
+  function renderTownImages(imgs) {
+    const area = document.getElementById('town-img-area');
+    area.innerHTML = '';
+    imgs.forEach(item => {
+      const wrap = document.createElement('div');
+      wrap.className = 'town-img-item';
+
+      const img = document.createElement('img');
+      img.src = item.src;
+      img.alt = item.alt;
+
+      const cap = document.createElement('div');
+      cap.className = 'town-img-caption';
+      cap.textContent = item.alt;
+
+      wrap.appendChild(img);
+      wrap.appendChild(cap);
+      area.appendChild(wrap);
+    });
+  }
+
+  // 切换乡镇展示的函数
+  function showTown(townKey, evt) {
+    const data = townsData[townKey];
+    if (!data) return;
+
+    // 更新右侧图片与文字内容
+    renderTownImages(data.imgs);
+    document.getElementById('town-name').innerText = data.name;
+    document.getElementById('town-level').innerText = data.level;
+    document.getElementById('town-geo').innerText = data.geo;
+    document.getElementById('town-desc').innerText = data.desc;
+    document.getElementById('town-highlight').innerHTML = "<strong>📍 地理看点：</strong>" + data.highlight;
+
+    // 更新左侧按钮激活状态
+    const buttons = document.querySelectorAll('.town-btn');
+    buttons.forEach(btn => btn.classList.remove('active'));
+    if (evt && evt.currentTarget) {
+      evt.currentTarget.classList.add('active');
+    }
+  }
+
+  // 页面加载时默认展示电尕镇图片
+  renderTownImages(townsData.diega.imgs);
+</script>
+</body>
+</html>

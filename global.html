@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>全球尺度 · 多尺度乡土地理教学 · 迭部</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+    background: #f4f6f4;
+    color: #1f2d1f;
+    line-height: 1.8;
+  }
+  header {
+    background: #2c5f2d; color: #fff;
+    padding: 28px 20px; text-align: center;
+  }
+  header h1 { font-size: 24px; letter-spacing: 2px; }
+  header p  { font-size: 14px; opacity: .85; margin-top: 6px; }
+
+  .top-nav {
+    display: flex; justify-content: center; flex-wrap: wrap;
+    gap: 4px; background: #1d4d1e; padding: 0 12px;
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 2px 6px rgba(0,0,0,.12);
+  }
+  .top-nav a {
+    color: #d8e8d8; text-decoration: none; font-size: 14px;
+    padding: 12px 14px; display: block;
+    border-bottom: 3px solid transparent;
+    transition: color .15s, border-color .15s;
+  }
+  .top-nav a:hover { color: #fff; border-bottom-color: #8fc98f; }
+  .top-nav a.active {
+    color: #fff; border-bottom-color: #f0c040; font-weight: 600;
+  }
+
+  main { max-width: 860px; margin: 32px auto; padding: 0 20px; }
+
+  .page-title { margin-bottom: 6px; font-size: 24px; color: #2c5f2d; }
+  .page-desc { font-size: 14px; color: #556055; margin-bottom: 24px; }
+
+  .section {
+    background: #fff; border-radius: 10px; padding: 24px 28px;
+    box-shadow: 0 2px 10px rgba(0,0,0,.08); margin-bottom: 24px;
+  }
+  .section h2 {
+    font-size: 19px; color: #2c5f2d; margin-bottom: 12px;
+    padding-bottom: 8px; border-bottom: 2px solid #d8e8d8;
+  }
+  .section h3 {
+    font-size: 16px; color: #1d4d1e; margin: 18px 0 8px;
+  }
+  .section p { font-size: 15px; color: #333; margin-bottom: 12px; }
+  .section p:last-child { margin-bottom: 0; }
+
+  .figure {
+    margin: 16px 0;
+    text-align: center;
+  }
+  .figure img {
+    max-width: 100%; border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.12);
+    display: block; margin: 0 auto;
+  }
+  .figure figcaption {
+    font-size: 12px; color: #7a857a; margin-top: 8px;
+    font-style: italic;
+  }
+
+  /* 两张图片同行排列 */
+  .figure-row {
+    display: flex;
+    gap: 16px;
+    margin: 16px 0;
+    align-items: flex-start;
+  }
+  .figure-row .figure {
+    flex: 1 1 0;
+    min-width: 0;
+    margin: 0;
+  }
+  .figure-row .figure img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.12);
+    display: block;
+  }
+
+  .data-box {
+    background: #eef5ee; border-left: 4px solid #8fc98f;
+    border-radius: 6px; padding: 14px 18px; margin: 16px 0;
+    font-size: 14px; color: #2c5f2d;
+  }
+  .data-box strong { color: #1d4d1e; }
+
+  .link-box {
+    background: #fbf8ec; border-left: 4px solid #f0c040;
+    border-radius: 6px; padding: 14px 18px; margin: 16px 0;
+    font-size: 14px; color: #5a4a1a;
+  }
+  .link-box strong { color: #7a5a0a; }
+
+  .highlight {
+    background: #f0c040; color: #1d4d1e;
+    padding: 1px 6px; border-radius: 4px; font-weight: 600;
+  }
+
+  /* FAO 官网引用样式 */
+  .fao-card {
+    background: #f4f8fb; border: 1px solid #c8dbe8;
+    border-radius: 8px; padding: 18px 22px; margin: 20px 0;
+  }
+  .fao-card h4 {
+    font-size: 15px; color: #1a5276; margin-bottom: 8px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .fao-card h4::before {
+    content: "🌐"; font-size: 16px;
+  }
+  .fao-card p {
+    font-size: 14px; color: #333; margin-bottom: 12px;
+  }
+  .fao-card .fao-btn {
+    display: inline-block; background: #5a5a5a; color: #fff;
+    padding: 6px 16px; border-radius: 4px; font-size: 13px;
+    text-decoration: none; transition: background .2s;
+  }
+  .fao-card .fao-btn:hover { background: #333; }
+
+  /* 央视网引用样式 */
+  .cctv-card {
+    background: #fdf6f4; border: 1px solid #ecc9bf;
+    border-radius: 8px; padding: 18px 22px; margin: 20px 0;
+  }
+  .cctv-card h4 {
+    font-size: 15px; color: #a33b26; margin-bottom: 8px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .cctv-card h4::before {
+    content: "📺"; font-size: 16px;
+  }
+  .cctv-card p {
+    font-size: 14px; color: #333; margin-bottom: 12px;
+  }
+  .cctv-card .cctv-btn {
+    display: inline-block; background: #b8452c; color: #fff;
+    padding: 6px 16px; border-radius: 4px; font-size: 13px;
+    text-decoration: none; transition: background .2s;
+  }
+  .cctv-card .cctv-btn:hover { background: #8f3420; }
+
+  footer {
+    text-align: center; padding: 24px 20px 40px;
+    font-size: 12px; color: #7a857a;
+  }
+
+  @media (max-width: 600px) {
+    .figure-row { flex-direction: column; }
+    .figure-row .figure img { height: 200px; }
+  }
+
+  @media (max-width: 480px) {
+    header h1 { font-size: 20px; }
+    .top-nav a { padding: 10px 9px; font-size: 13px; }
+    main { padding: 0 12px; }
+    .section { padding: 18px 16px; }
+    .page-title { font-size: 21px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>多尺度乡土地理教学 · 迭部</h1>
+  <p>从全球到乡镇，层层认识脚下的土地</p>
+</header>
+
+<nav class="top-nav">
+  <a href="index.html">首页</a>
+  <a href="global.html" class="active">全球尺度</a>
+  <a href="china.html">中国尺度</a>
+  <a href="province.html">省域尺度</a>
+  <a href="county.html">县域尺度</a>
+  <a href="red.html">长征精神</a>
+  <a href="message.html">互动留言</a>
+</nav>
+
+<main>
+  <h2 class="page-title">全球尺度看迭部：青藏高原东缘的生态孤岛</h2>
+  <p class="page-desc">从行星尺度审视，理解一个西部小县为何与全球生态系统紧密相连。</p>
+
+  <!-- 一、全球坐标中的位置 -->
+  <div class="section">
+    <h2>一、全球坐标中的位置</h2>
+    <p>迭部在全球地理坐标中的位置，决定了它独特的自然禀赋。从行星尺度审视，迭部地处<strong>青藏高原东部边缘</strong>，是这一“世界屋脊”向秦巴山地过渡的关键节点。青藏高原的隆升始于约2.4亿年前印度板块向北挤压，至今其边缘仍在持续抬升。迭部正位于这一仍在“生长”的高原东缘，承受着高原抬升与流水侵蚀的双重地质作用，形成了今日重峦迭嶂、山高谷深的地貌格局。</p>
+
+    <div class="data-box">
+      <strong>核心区位数据</strong><br>
+      迭部位于北纬 33°39′—34°20′、东经 102°55′—104°05′ 之间，总面积 <span class="highlight">5108.3 平方公里</span>，海拔跨度从约 1500 米至 4920 米。白龙江自西向东横贯全境，将群山分割为北侧迭山与南侧岷山。
+    </div>
+
+    <figure class="figure">
+      <img src="images/quanqiu-1.jpg" alt="位置">
+        </figure>
+  </div>
+
+  <!-- 二、全球气候变化下的迭部关联 -->
+  <div class="section">
+    <h2>二、全球气候变化下的迭部关联</h2>
+    <p>迭部虽小，却与全球气候系统紧密相连。青藏高原是全球气候变化的敏感区，1961—2025 年间每十年升温 <span class="highlight">0.35℃</span>，高于同期全球平均水平。这一升温趋势对迭部所在的高山峡谷区产生直接影响：冰川退缩、冻土退化正在改变区域水文格局与山坡稳定性。</p>
+    <p>过去 60 年，青藏高原冰川面积整体缩减约 <span class="highlight">24%</span>，约 7000 条小冰川完全消失。尽管迭部境内以森林生态系统为主而非冰川主导，但作为白龙江上游重要水源涵养区，高原冰冻圈的持续变化将通过水系传导，影响迭部的水资源供给与生态安全。</p>
+
+    <div class="link-box">
+      <strong>教学提示</strong>：可以引导学生思考——全球升温 0.35℃/十年 这样看似微小的数字，为什么会对一个山区县的水源和山坡稳定产生实质影响？这正是“全球尺度”与“地方尺度”相互作用的典型例子。
+    </div>
+  </div>
+
+  <!-- 三、全球视野下的生态价值 -->
+  <div class="section">
+    <h2>三、全球视野下的生态价值</h2>
+    <p>迭部的生态意义远超其县域尺度。全县<strong>植被覆盖率达 89.63%</strong>，<strong>森林覆盖率达 64.87%</strong>，拥有 1671 种高等级植物和 183 种野生珍稀动物，包括大熊猫、羚羊、雪豹等。更值得关注的是，迭部扎尕那的农林牧复合系统被 <strong>联合国粮农组织（FAO）</strong> 认定为“<span class="highlight">全球重要农业文化遗产</span>”。这意味着迭部不仅是一个中国县域，更是全球农业文化多样性保护网络中的正式成员。</p>
+    <p>从全球尺度看，迭部是青藏高原东缘生物多样性走廊的关键节点，其森林生态系统的完整性对整个长江上游生态屏障具有不可替代的价值。</p>
+
+    <!-- 两张图片同行排列 -->
+    <div class="figure-row">
+      <!-- 森林植被图片 -->
+      <figure class="figure">
+        <img src="images/quanqiu-2.jpg" alt="高山峡谷区的森林植被示意">
+        <figcaption>示意：高山峡谷区的森林植被（图源：实景拍摄）</figcaption>
+      </figure>
+
+      <!-- 藏汉过渡区与复合农业景观图片 -->
+      <figure class="figure">
+        <img src="images/quanqiu-3.jpg" alt="高山田园与藏汉文化过渡区村落景观示意">
+        <figcaption>示意：农林牧复合景观（图源：微观迭部）</figcaption>
+      </figure>
+    </div>
+
+    <!-- FAO 官网图文引用 -->
+    <div class="fao-card">
+      <h4>联合国粮农组织（FAO）官网收录介绍</h4>
+      <p><strong>中国 · 迭部扎尕那农林牧复合系统</strong></p>
+      <p>该系统毗邻三大地貌和气候带。这一藏汉文化过渡区是基于对生态系统的深入了解对不同海拔高度农业地貌开展综合管理的典范。</p>
+      <a href="https://www.fao.org/giahs/around-the-world/detail//china-zhagana-system/zh/" target="_blank" class="fao-btn">看更多 >></a>
+    </div>
+
+    <!-- 央视网视频引用 -->
+    <div class="cctv-card">
+      <h4>央视网《田野对望》节目报道</h4>
+      <p><strong>[田野对望] 甘肃迭部扎尕那的农林牧复合系统</strong></p>
+      <p>央视网 2024 年 11 月 22 日播出，以迭部扎尕那农林牧复合系统为案例，探讨中外农业文化遗产的异同与交流互鉴，可作为课堂教学的视频素材。</p>
+      <a href="https://tv.cctv.cn/2024/11/22/VIDEK652NyVIO386ejrkauhk241122.shtml" target="_blank" class="cctv-btn">观看视频 >></a>
+    </div>
+
+    <div class="data-box">
+      <strong>一个值得思考的问题</strong><br>
+      一个约 5 万人口的西部小县，为何能获得联合国的关注？答案在于：迭部的价值不取决于人口规模或经济总量，而取决于它在全球生态系统中承担的功能。这正是“全球尺度”视角的意义——让学生看到家乡与世界体系的真实连接。
+    </div>
+  </div>
+
+  <!-- 四、与初中地理教材的链接 -->
+  <div class="section">
+    <h2>四、与初中地理教材的链接</h2>
+    <p>迭部的全球尺度内容，可以与人教版初中地理教材的多个章节建立直接链接。最核心的契合点集中在<strong>七年级上册“陆地和海洋”</strong>与<strong>八年级上册“中国的自然环境”</strong>，同时也能呼应“发展与合作”中关于国际合作与全球议题的内容。</p>
+
+    <h3>与七年级上册的链接</h3>
+    <p><strong>第三章“陆地和海洋”第二节“世界的地形”与第三节“海陆的变迁”</strong>：迭部地处青藏高原东部边缘，而青藏高原本身就是板块运动的产物。教材在“海陆的变迁”中会讲到板块构造学说，青藏高原正是印度板块与欧亚板块碰撞挤压抬升形成的典型例证。迭部所在的高山峡谷地貌，是这一宏观地质过程在区域尺度上的具体表现。教学链接：先让学生理解青藏高原的成因（全球/板块尺度），再出示迭部“重峦迭嶂、山高谷深”的地貌描述，引导学生思考“家乡的山为什么这么高、谷为什么这么深”，把抽象板块理论落到脚下的土地。</p>
+    <p><strong>第四章“天气与气候”</strong>：青藏高原对东亚季风系统有深刻影响，它通过热力作用改变大气环流，进而影响中国东部降水格局。迭部属“非典型性大陆性气候，冬无严寒，夏无酷暑”，这种区域气候特征与高原的热力效应存在关联。虽然教材对季风成因的讲解较浅，但可以作为“气候受地形影响”的拓展案例。</p>
+
+    <h3>与八年级上册的链接</h3>
+    <p><strong>第二章“中国的自然环境”第一节“地形和地势”</strong>：教材明确讲述中国地势“西高东低，呈三级阶梯状分布”，第一级阶梯就是青藏高原，平均海拔 4000 米以上。迭部海拔在 1600—4920 米之间，正处于第一级阶梯向第二级阶梯过渡的边缘地带。教学时可以让学生在中国地形图上找到迭部的位置，判断它位于哪一级阶梯或过渡带，理解“青藏高原东缘”这个地理坐标在教材知识体系中的确切含义。同时，教材提到“山区面积广大”是中国地形的显著特征，迭部全境为高山峡谷，正是山区县域的典型样本。</p>
+    <p><strong>第二章“中国的自然环境”第二节“气候”和相关章节</strong>：迭部地处长江与黄河水域分界线附近，这一位置信息可以链接到教材中关于中国主要水系和分水岭的内容。白龙江作为嘉陵江支流，属于长江流域，而迭部北部山区则是黄河支流的发源地，这种“一县跨两流域”的特点在县域尺度上直观展示了中国水系格局的微观切片。</p>
+    <p><strong>第八章“西北地区”和相关区域地理内容（视教材版本）</strong>：迭部隶属甘南藏族自治州，有藏、汉、回等 17 个民族，可以与教材中关于民族分布“大杂居、小聚居”的特点相链接。扎尕那农林牧复合系统被联合国粮农组织认定为“全球重要农业文化遗产”，这可以链接到“发展与合作”中关于国际组织（FAO）和全球文化多样性保护的内容，让学生看到一个县域如何通过国际合作获得全球认可。</p>
+
+    <div class="link-box">
+      <strong>教学落点建议</strong>：做课件时，建议采用“<strong>教材知识点 → 迭部案例 → 回到教材理解</strong>”的三段式结构。例如讲“地势三级阶梯”时：先展示教材标准示意图（青藏高原为第一级），再嵌入迭部的海拔数据和地形描述，最后让学生回答“迭部处于阶梯的什么位置？它对河流流向有什么影响？”这样，乡土素材不是装饰，而是帮助学生理解教材抽象概念的具体锚点。
+    </div>
+  </div>
+</main>
+
+<footer>
+  数据来源：迭部县人民政府、联合国粮农组织、央视网、甘南州统计公报 · 教学用途网站
+</footer>
+
+</body>
+</html>

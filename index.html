@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>多尺度乡土地理教学 · 迭部</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+    background: #f4f6f4;
+    color: #1f2d1f;
+    line-height: 1.6;
+  }
+  header { background: #2c5f2d; color: #fff; padding: 28px 20px; text-align: center; }
+  header h1 { font-size: 26px; letter-spacing: 2px; }
+  header p  { font-size: 14px; opacity: .85; margin-top: 6px; }
+  .top-nav {
+    display: flex; justify-content: center; flex-wrap: wrap; gap: 4px;
+    background: #1d4d1e; padding: 0 12px; position: sticky; top: 0; z-index: 1000;
+    box-shadow: 0 2px 6px rgba(0,0,0,.12);
+  }
+  .top-nav a { color: #d8e8d8; text-decoration: none; font-size: 14px; padding: 12px 14px; display: block; border-bottom: 3px solid transparent; transition: color .15s, border-color .15s; }
+  .top-nav a:hover { color: #fff; border-bottom-color: #8fc98f; }
+  .top-nav a.active { color: #fff; border-bottom-color: #f0c040; font-weight: 600; }
+  .map-section { max-width: 1100px; margin: 24px auto 0; padding: 0 20px; }
+  .map-container { background: #fff; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,.08); display: flex; flex-direction: column; }
+  .map-header { padding: 12px 18px; background: #eef3ee; border-bottom: 1px solid #d0dcd0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+  .map-header h2 { font-size: 16px; color: #2c5f2d; }
+  .map-tips { font-size: 12px; color: #7a857a; }
+  #leaflet-map { width: 100%; height: 420px; z-index: 1; }
+  .module-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; max-width: 1100px; margin: 32px auto; padding: 0 20px; }
+  .module-card { background: #fff; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,.08); text-decoration: none; color: inherit; display: flex; flex-direction: column; transition: transform .2s, box-shadow .2s; }
+  .module-card:hover { transform: translateY(-4px); box-shadow: 0 8px 22px rgba(0,0,0,.15); }
+  .module-card img { width: 100%; height: 170px; object-fit: cover; display: block; background: #d8e0d8; }
+  .module-body { padding: 16px 18px 20px; }
+  .module-body h2 { font-size: 18px; color: #2c5f2d; margin-bottom: 8px; }
+  .module-body p { font-size: 13px; color: #556055; }
+  .module-card.red { background: #fdf6f0; }
+  .module-card.red .module-body h2 { color: #8a2b1d; }
+  .module-card.message { background: #eef3ee; }
+  .module-card.message .module-body h2 { color: #1d4d1e; }
+  footer { text-align: center; padding: 24px 20px 40px; font-size: 12px; color: #7a857a; }
+  @media (max-width: 760px) { .module-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; } .module-card img { height: 130px; } #leaflet-map { height: 320px; } }
+  @media (max-width: 480px) { .module-grid { grid-template-columns: 1fr; } header h1 { font-size: 20px; } .top-nav a { padding: 10px 9px; font-size: 13px; } }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>多尺度乡土地理教学 · 迭部</h1>
+  <p>从全球到乡镇，层层认识脚下的土地</p>
+</header>
+
+<nav class="top-nav">
+  <a href="index.html" class="active">首页</a>
+  <a href="global.html">全球尺度</a>
+  <a href="china.html">中国尺度</a>
+  <a href="province.html">省域尺度</a>
+  <a href="county.html">县域尺度</a>
+  <a href="red.html">长征精神</a>
+  <a href="message.html">互动留言</a>
+</nav>
+
+<div class="map-section">
+  <div class="map-container">
+    <div class="map-header">
+      <h2>🗺️ 缩放地图，观察迭部县边界、白龙江与聚落的分布关系</h2>
+      <span class="map-tips">当前视角：<strong id="scale-label">迭部县域尺度</strong></span>
+    </div>
+    <div id="leaflet-map"></div>
+  </div>
+</div>
+
+<main class="module-grid">
+  <a class="module-card" href="global.html">
+    <img src="images/diqiu-1.jpg" alt="全球尺度看迭部">
+    <div class="module-body">
+      <h2>全球尺度看迭部</h2>
+      <p>扎尕那农林牧复合系统的全球农业文化遗产坐标与生物多样性热点对比。</p>
+    </div>
+  </a>
+  <a class="module-card" href="china.html">
+    <img src="images/china-1.jpg" alt="中国尺度看迭部">
+    <div class="module-body">
+      <h2>中国尺度看迭部</h2>
+      <p>青藏高原东缘生态屏障、长江黄河上游水源涵养地的全国意义。</p>
+    </div>
+  </a>
+  <a class="module-card" href="province.html">
+    <img src="images/province-1.jpg" alt="省域尺度看迭部">
+    <div class="module-body">
+      <h2>省域尺度看迭部</h2>
+      <p>甘肃南部生态安全格局中的迭部，白龙江流域上下游的系统关联。</p>
+    </div>
+  </a>
+  <a class="module-card" href="county.html">
+    <img src="images/xian-1.jpg" alt="县域尺度看迭部">
+    <div class="module-body">
+      <h2>县域尺度看迭部</h2>
+      <p>5108 平方公里的垂直地带性、物产分布与人口聚落空间格局。</p>
+    </div>
+  </a>
+  <a class="module-card red" href="red.html">
+    <img src="images/hongse-1.jpg" alt="长征精神在迭部">
+    <div class="module-body">
+      <h2>长征精神</h2>
+      <p>俄界会议、腊子口战役与迭部红色地理遗迹，长征精神的地理课堂。</p>
+    </div>
+  </a>
+  <a class="module-card message" href="message.html">
+    <img src="images/hudong-1.jpg" alt="互动留言">
+    <div class="module-body">
+      <h2>互动留言</h2>
+      <p>学生提问、学习心得、野外考察记录与教师答疑的交流空间。</p>
+    </div>
+  </a>
+</main>
+
+<footer>
+  数据来源：迭部县人民政府、联合国粮农组织、甘南州统计公报 · 教学用途网站
+</footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@turf/turf@6.5.0/turf.min.js"></script>
+
+<script>
+  var map = L.map('leaflet-map').setView([34.08, 103.25], 10);
+
+  var streetLayer = L.tileLayer('https://webrd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}', { subdomains: ['1','2','3','4'], attribution: '&copy; 高德地图', maxZoom: 18 });
+  var satelliteLayer = L.tileLayer('https://webst0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=6&x={x}&y={y}&z={z}', { subdomains: ['1','2','3','4'], attribution: '&copy; 高德地图', maxZoom: 18 });
+  streetLayer.addTo(map);
+  L.control.layers({ "中文街道图": streetLayer, "卫星影像": satelliteLayer }, null, { position: 'topright' }).addTo(map);
+
+  var riverLabelLayer = L.layerGroup().addTo(map);
+  var diebuRiverLabelLayer = L.layerGroup().addTo(map);
+  var DIEBU_LABEL_FONT = 19;
+  var RIVER_LABEL_FONT = 19;
+
+  var diebuPolygonTurf = null;
+  var gannanGeoJSONData = null;
+  var diebuGeoJSONData = null;
+  var riverGeoJSONData = null;
+  var gannanLayer = null;
+  var diebuLayer = null;
+  var riverLayer = null;
+  var diebuGreenRiverLayer = null;
+
+  function getLineCoordsMidpoint(geometry) {
+    if (!geometry) return null;
+    var lines = geometry.type === 'LineString' ? [geometry.coordinates] : (geometry.type === 'MultiLineString' ? geometry.coordinates : []);
+    if (!lines.length) return null;
+    var longest = lines[0];
+    for (var i = 1; i < lines.length; i++) if (lines[i].length > longest.length) longest = lines[i];
+    if (!longest || !longest.length) return null;
+    var mid = longest[Math.floor(longest.length / 2)];
+    return [mid[1], mid[0]];
+  }
+
+  function extractLineCoords(geometry) {
+    if (!geometry) return [];
+    if (geometry.type === 'LineString') return [geometry.coordinates];
+    if (geometry.type === 'MultiLineString') return geometry.coordinates;
+    return [];
+  }
+
+  function initRiver(data) {
+    riverGeoJSONData = data;
+    if (!riverGeoJSONData || !riverGeoJSONData.features) return;
+
+    riverLayer = L.geoJSON(riverGeoJSONData, {
+      style: function(feature) {
+        var isRiver = feature.properties && feature.properties.waterway === 'river';
+        return { color: isRiver ? '#1565c0' : '#4fa3e3', weight: isRiver ? 6 : 3, opacity: isRiver ? 0.95 : 0.8 };
+      },
+      onEachFeature: function(feature, layer) {
+        var props = feature.properties || {};
+        var name = props.name || '无名支流';
+        var isRiver = props.waterway === 'river';
+        layer.bindTooltip(name, { permanent: false, direction: 'top' });
+        layer.bindPopup('<b>' + name + '</b><br><span style="font-size:12px;color:#555;">类型：' + (isRiver ? '白龙江干流' : '白龙江支流') + '</span>');
+
+        var midpoint = getLineCoordsMidpoint(feature.geometry);
+        if (midpoint) {
+          var labelColor = isRiver ? 'rgba(21,101,192,.92)' : 'rgba(79,163,227,.92)';
+          riverLabelLayer.addLayer(L.marker(midpoint, {
+            icon: L.divIcon({
+              className: 'river-label-marker',
+              html: '<div style="background:' + labelColor + ';color:#fff;font-size:11px;font-weight:' + (isRiver ? 'bold' : 'normal') + ';padding:1px 8px;border-radius:10px;white-space:nowrap;box-shadow:0 1px 4px rgba(0,0,0,.25);border:1px solid #fff;">' + name + '</div>',
+              iconSize: [0,0], iconAnchor: [0,0]
+            }), interactive: false
+          }));
+        }
+      }
+    }).addTo(map);
+
+    riverLayer.bringToFront();
+    riverLabelLayer.bringToFront();
+    try { map.fitBounds(riverLayer.getBounds(), { padding: [20, 20] }); } catch (e) {}
+    applyDiebuGreenRiver();
+  }
+
+  function initBoundaries(gannanData, diebuData) {
+    gannanGeoJSONData = gannanData;
+    diebuGeoJSONData = diebuData;
+
+    // ===== 甘南州边界：红色实线，置于最底层 =====
+    if (gannanGeoJSONData && gannanGeoJSONData.features) {
+      gannanLayer = L.geoJSON(gannanGeoJSONData, {
+        style: { color: '#d32f2f', weight: 2.8, opacity: 0.9, fillColor: '#d32f2f', fillOpacity: 0.02 },
+        onEachFeature: function(feature, layer) {
+          var name = (feature.properties && feature.properties.name) || '甘南藏族自治州';
+          layer.bindPopup('<b>' + name + '</b><br><span style="font-size:12px;color:#555;">甘南藏族自治州边界</span>');
+          layer.bindTooltip(name, { sticky: true });
+        }
+      }).addTo(map);
+      gannanLayer.bringToBack();
+    }
+
+    // ===== 迭部县边界：与 red.html 完全一致的样式 =====
+    if (diebuGeoJSONData && diebuGeoJSONData.features) {
+      try { diebuPolygonTurf = turf.feature(diebuGeoJSONData.features[0]); } catch (e) {}
+
+      diebuLayer = L.geoJSON(diebuGeoJSONData, {
+        style: {
+          color: '#f0c040',
+          weight: 3.5,
+          opacity: 1,
+          fillColor: '#f0c040',
+          fillOpacity: 0.18,
+          dashArray: '10, 5'
+        },
+        onEachFeature: function(feature, layer) {
+          var name = (feature.properties && feature.properties.name) || '迭部县';
+          layer.bindPopup(
+            '<b>' + name + '</b><br>' +
+            '红军长征途经甘肃的重要一站，地处甘川交界，白龙江峡谷穿境而过。<br>' +
+            '<span style="font-size:11px;color:#888;">边界来源：阿里云 DataV（WGS84）</span>'
+          );
+          layer.bindTooltip(name, { sticky: true });
+        }
+      }).addTo(map);
+      diebuLayer.bringToFront();
+
+      var center = null;
+      if (diebuGeoJSONData.features.length) {
+        var props = diebuGeoJSONData.features[0].properties || {};
+        if (props.center && props.center.length === 2) center = L.latLng(props.center[1], props.center[0]);
+      }
+      if (!center) center = diebuLayer.getBounds().getCenter();
+
+      L.marker(center, {
+        icon: L.divIcon({
+          className: 'diebu-highlight-label',
+          html: '<div style="background:#f0c040;color:#1d2b1d;font-size:' + DIEBU_LABEL_FONT + 'px;font-weight:bold;letter-spacing:2px;padding:5px 18px;border-radius:22px;border:2px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.35);white-space:nowrap;text-shadow:0 1px 0 rgba(255,255,255,.5);">迭部县</div>',
+          iconSize: [110, 36], iconAnchor: [55, 18]
+        }), interactive: false, zIndexOffset: 1000
+      }).addTo(map);
+
+      // 自动缩放到迭部县范围（和 red.html 的 fitBounds 一致）
+      try { map.fitBounds(diebuLayer.getBounds(), { padding: [30, 30] }); } catch (e) {}
+
+      applyDiebuGreenRiver();
+    }
+  }
+
+  function lineTouchesDiebu(turfLine) {
+    if (!diebuPolygonTurf) return false;
+    try {
+      if (turf.lineIntersect(turfLine, diebuPolygonTurf).features.length > 0) return true;
+      return turf.booleanPointInPolygon(turf.point(turfLine.geometry.coordinates[0]), diebuPolygonTurf);
+    } catch (e) { return false; }
+  }
+
+  function applyDiebuGreenRiver() {
+    if (!riverGeoJSONData || !diebuGeoJSONData || diebuGreenRiverLayer) return;
+    var greenFeatures = [];
+    riverGeoJSONData.features.forEach(function(f) {
+      extractLineCoords(f.geometry).forEach(function(coords) {
+        if (lineTouchesDiebu(turf.lineString(coords))) {
+          greenFeatures.push({ type: 'Feature', properties: f.properties, geometry: { type: 'LineString', coordinates: coords } });
+        }
+      });
+    });
+    if (!greenFeatures.length) return;
+
+    diebuGreenRiverLayer = L.geoJSON({ type: 'FeatureCollection', features: greenFeatures }, {
+      style: function(feature) {
+        var isRiver = feature.properties && feature.properties.waterway === 'river';
+        return { color: '#2e7d32', weight: isRiver ? 9 : 5, opacity: 1, lineCap: 'round', lineJoin: 'round' };
+      }
+    }).addTo(map);
+
+    addDiebuRiverLabels();
+    if (gannanLayer) gannanLayer.bringToBack();
+    if (diebuLayer) diebuLayer.bringToFront();
+    if (diebuGreenRiverLayer) diebuGreenRiverLayer.bringToFront();
+  }
+
+  function addDiebuRiverLabels() {
+    if (!riverGeoJSONData || !diebuGeoJSONData || !diebuPolygonTurf) return;
+    riverGeoJSONData.features.forEach(function(f) {
+      if (!f.properties || f.properties.waterway !== 'river') return;
+      extractLineCoords(f.geometry).forEach(function(coords) {
+        var turfLine = turf.lineString(coords);
+        if (!lineTouchesDiebu(turfLine)) return;
+        var lengthKm = turf.length(turfLine, { units: 'kilometers' });
+        var count = Math.max(1, Math.floor(lengthKm / Math.max(12, lengthKm / 6)));
+        for (var i = 0; i <= count; i++) {
+          var pt = turf.along(turfLine, (i + 0.5) * (lengthKm / (count + 1)), { units: 'kilometers' });
+          var lng = pt.geometry.coordinates[0], lat = pt.geometry.coordinates[1];
+          if (turf.booleanPointInPolygon(turf.point([lng, lat]), diebuPolygonTurf)) {
+            diebuRiverLabelLayer.addLayer(L.marker([lat, lng], {
+              icon: L.divIcon({
+                className: 'diebu-river-label',
+                html: '<div style="background:rgba(255,255,255,0.9);color:#1565c0;font-size:' + RIVER_LABEL_FONT + 'px;font-weight:bold;letter-spacing:2px;padding:3px 14px;border-radius:18px;border:2px solid #1565c0;box-shadow:0 2px 8px rgba(0,0,0,.3);white-space:nowrap;">' + (f.properties.name || '白龙江') + '</div>',
+                iconSize: [110, 34], iconAnchor: [55, 17]
+              }), interactive: false, zIndexOffset: 2000
+            }));
+          }
+        }
+      });
+    });
+  }
+
+  function fetchJSON(url) {
+    return fetch(url, { cache: 'no-store' }).then(function(res) {
+      if (!res.ok) throw new Error(url + ' 加载失败: HTTP ' + res.status);
+      return res.json();
+    });
+  }
+
+  // 并行加载：甘南州 + 迭部县 + 水系（水系可选）
+  Promise.all([
+    fetchJSON('gannan.json'),
+    fetchJSON('diebu.json'),
+    fetchJSON('river.json').catch(function(err) {
+      console.warn('水系数据未加载，地图其余部分继续显示：', err);
+      return null;
+    })
+  ]).then(function(results) {
+    if (typeof turf === 'undefined') {
+      console.error('Turf.js 未加载成功，水系高亮与河流标注功能将不可用');
+    }
+    initRiver(results[2]);
+    initBoundaries(results[0], results[1]);
+  }).catch(function(err) {
+    console.error('边界数据加载失败：', err);
+    alert('地图边界数据加载失败，请确认 gannan.json 与 diebu.json 已上传且文件名一致。');
+  });
+</script>
+</body>
+</html>

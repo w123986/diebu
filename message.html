@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>互动留言 · 多尺度乡土地理教学 · 迭部</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+    background: #f4f6f4;
+    color: #1f2d1f;
+    line-height: 1.6;
+  }
+  header {
+    background: #2c5f2d; color: #fff;
+    padding: 28px 20px; text-align: center;
+  }
+  header h1 { font-size: 24px; letter-spacing: 2px; }
+  header p  { font-size: 14px; opacity: .85; margin-top: 6px; }
+
+  .top-nav {
+    display: flex; justify-content: center; flex-wrap: wrap;
+    gap: 4px; background: #1d4d1e; padding: 0 12px;
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 2px 6px rgba(0,0,0,.12);
+  }
+  .top-nav a {
+    color: #d8e8d8; text-decoration: none; font-size: 14px;
+    padding: 12px 14px; display: block;
+    border-bottom: 3px solid transparent;
+    transition: color .15s, border-color .15s;
+  }
+  .top-nav a:hover { color: #fff; border-bottom-color: #8fc98f; }
+  .top-nav a.active {
+    color: #fff; border-bottom-color: #f0c040; font-weight: 600;
+  }
+
+  main { max-width: 820px; margin: 32px auto; padding: 0 20px; }
+
+  .page-title { margin-bottom: 6px; font-size: 22px; color: #2c5f2d; }
+  .page-desc { font-size: 14px; color: #556055; margin-bottom: 24px; }
+
+  .comment-card {
+    background: #fff; border-radius: 10px; padding: 22px 24px;
+    box-shadow: 0 2px 10px rgba(0,0,0,.08); margin-bottom: 28px;
+  }
+
+  /* ===== 留言表单样式 ===== */
+  .message-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+  .form-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .form-row .form-group {
+    flex: 1 1 160px;
+  }
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .form-group label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #2c5f2d;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .form-group label .required {
+    color: #c0392b;
+    font-size: 16px;
+  }
+  .form-group input,
+  .form-group textarea,
+  .form-group select {
+    font-family: inherit;
+    font-size: 14px;
+    padding: 10px 14px;
+    border: 1px solid #ccd8cc;
+    border-radius: 6px;
+    background: #fafcfa;
+    color: #1f2d1f;
+    transition: border-color .2s, box-shadow .2s;
+    outline: none;
+    width: 100%;
+  }
+  .form-group select {
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%232c5f2d' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    background-size: 10px;
+    padding-right: 36px;
+  }
+  .form-group input:focus,
+  .form-group textarea:focus,
+  .form-group select:focus {
+    border-color: #2c5f2d;
+    box-shadow: 0 0 0 3px rgba(44, 95, 45, 0.12);
+    background: #fff;
+  }
+  .form-group textarea {
+    resize: vertical;
+    min-height: 110px;
+  }
+  .form-group input::placeholder,
+  .form-group textarea::placeholder {
+    color: #9aaa9a;
+    font-size: 13px;
+  }
+
+  .form-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .btn-submit {
+    background: #2c5f2d;
+    color: #fff;
+    border: none;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    padding: 11px 30px;
+    border-radius: 6px;
+    cursor: pointer;
+    letter-spacing: 1px;
+    transition: background .2s, transform .1s;
+  }
+  .btn-submit:hover {
+    background: #1d4d1e;
+  }
+  .btn-submit:active {
+    transform: scale(0.98);
+  }
+  .form-hint {
+    font-size: 12px;
+    color: #889988;
+  }
+
+  /* 模拟留言展示区 */
+  .message-list {
+    margin-top: 28px;
+    padding-top: 20px;
+    border-top: 1px solid #e6eee6;
+  }
+  .message-list h3 {
+    font-size: 17px;
+    color: #2c5f2d;
+    margin-bottom: 16px;
+    font-weight: 600;
+  }
+  .message-item {
+    background: #f8faf8;
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin-bottom: 14px;
+    border-left: 4px solid #8fc98f;
+  }
+  .message-item .msg-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 8px 16px;
+    margin-bottom: 6px;
+    font-size: 13px;
+  }
+  .message-item .msg-name {
+    font-weight: 600;
+    color: #1d4d1e;
+  }
+  .message-item .msg-role {
+    display: inline-block;
+    background: #e3efe3;
+    color: #2c5f2d;
+    font-size: 12px;
+    padding: 1px 10px;
+    border-radius: 10px;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  .message-item .msg-contact {
+    color: #7a8f7a;
+    font-size: 12px;
+  }
+  .message-item .msg-time {
+    color: #9aaa9a;
+    font-size: 12px;
+    margin-left: auto;
+  }
+  .message-item .msg-content {
+    font-size: 14px;
+    color: #2d3f2d;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .empty-tip {
+    color: #889988;
+    font-size: 14px;
+    text-align: center;
+    padding: 16px 0;
+  }
+
+  .contact-info {
+    margin-top: 24px;
+    padding-top: 18px;
+    border-top: 1px dashed #c8d4c8;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 28px;
+    font-size: 15px;
+    color: #2c5f2d;
+    background: #f8faf8;
+    border-radius: 8px;
+    padding: 16px 20px;
+    align-items: center;
+  }
+  .contact-info .contact-label {
+    font-weight: 600;
+    color: #1d4d1e;
+    margin-right: 4px;
+  }
+  .contact-info .contact-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .contact-info .contact-item a {
+    color: #2c5f2d;
+    text-decoration: none;
+    font-weight: 500;
+    border-bottom: 1px dotted #8fc98f;
+  }
+  .contact-info .contact-item a:hover {
+    color: #1d4d1e;
+    border-bottom-color: #2c5f2d;
+  }
+
+  footer {
+    text-align: center; padding: 24px 20px 40px;
+    font-size: 12px; color: #7a857a;
+  }
+
+  @media (max-width: 480px) {
+    header h1 { font-size: 20px; }
+    .top-nav a { padding: 10px 9px; font-size: 13px; }
+    main { padding: 0 12px; }
+    .comment-card { padding: 16px; }
+    .contact-info {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    .form-row { flex-direction: column; gap: 16px; }
+    .form-row .form-group { flex: 1 1 auto; }
+    .message-item .msg-time { margin-left: 0; width: 100%; }
+    .btn-submit { width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>多尺度乡土地理教学 · 迭部</h1>
+  <p>从全球到乡镇，层层认识脚下的土地</p>
+</header>
+
+<nav class="top-nav">
+  <a href="index.html">首页</a>
+  <a href="global.html">全球尺度</a>
+  <a href="china.html">中国尺度</a>
+  <a href="province.html">省域尺度</a>
+  <a href="county.html">县域尺度</a>
+  <a href="red.html">长征精神</a>
+  <a href="message.html" class="active">互动留言</a>
+</nav>
+
+<main>
+  <h2 class="page-title">互动留言</h2>
+  <p class="page-desc">欢迎留下你的问题、学习心得或野外考察记录。教师会定期查看并回复。</p>
+
+  <div class="comment-card">
+    <!-- ===== 留言表单（纯前端模拟，留言暂存在当前页面） ===== -->
+    <form class="message-form" id="messageForm" autocomplete="off">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="msgName">昵称 <span class="required">*</span></label>
+          <input type="text" id="msgName" name="name" placeholder="你的昵称或姓名" maxlength="30" required>
+        </div>
+        <div class="form-group">
+          <label for="msgRole">身份 <span class="required">*</span></label>
+          <select id="msgRole" name="role" required>
+            <option value="" disabled selected>请选择身份</option>
+            <option value="学生">学生</option>
+            <option value="教师">教师</option>
+            <option value="家长">家长</option>
+            <option value="校友">校友</option>
+            <option value="地理爱好者">地理爱好者</option>
+            <option value="其他">其他</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="msgContact">联系方式（选填）</label>
+          <input type="text" id="msgContact" name="contact" placeholder="邮箱 / 电话 / QQ（不会公开）" maxlength="60">
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="msgContent">留言内容 <span class="required">*</span></label>
+        <textarea id="msgContent" name="content" placeholder="写下你的问题、学习心得或野外考察记录……" maxlength="800" required></textarea>
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn-submit">发表留言</button>
+        <span class="form-hint">* 为必填项。留言仅用于教学交流。</span>
+      </div>
+    </form>
+
+    <!-- 留言展示区 -->
+    <div class="message-list">
+      <h3>最新留言</h3>
+      <div id="messageList">
+        <p class="empty-tip">暂无留言，来写下第一条吧 ✨</p>
+      </div>
+    </div>
+
+    <!-- 联系方式（保留） -->
+    <div class="contact-info">
+      <div class="contact-item">
+        <span class="contact-label">电话：</span>
+        <a href="tel:13993119838">13993119838</a>
+      </div>
+      <div class="contact-item">
+        <span class="contact-label">QQ：</span>
+        <a href="https://wpa.qq.com/msgrd?v=3&uin=1535938956&site=qq&menu=yes" target="_blank">1535938956</a>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  数据来源：迭部县人民政府、联合国粮农组织、甘南州统计公报 · 教学用途网站
+</footer>
+
+<script>
+  (function() {
+    const STORAGE_KEY = 'diebu_messages_v2';
+    const form = document.getElementById('messageForm');
+    const nameInput = document.getElementById('msgName');
+    const roleSelect = document.getElementById('msgRole');
+    const contactInput = document.getElementById('msgContact');
+    const contentInput = document.getElementById('msgContent');
+    const listContainer = document.getElementById('messageList');
+
+    // 从 localStorage 读取留言列表
+    function loadMessages() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        return raw ? JSON.parse(raw) : [];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    // 保存留言列表到 localStorage
+    function saveMessages(messages) {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
+      } catch (e) {
+        // localStorage 不可用或已满，静默失败
+      }
+    }
+
+    // 格式化时间
+    function formatTime(ts) {
+      const d = new Date(ts);
+      const pad = (n) => String(n).padStart(2, '0');
+      return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    }
+
+    // 渲染留言列表
+    function renderMessages() {
+      const messages = loadMessages();
+      if (!messages.length) {
+        listContainer.innerHTML = '<p class="empty-tip">暂无留言，来写下第一条吧 ✨</p>';
+        return;
+      }
+      // 按时间倒序
+      messages.sort((a, b) => b.time - a.time);
+      let html = '';
+      for (const msg of messages) {
+        const safeName = escapeHTML(msg.name);
+        const safeRole = msg.role ? escapeHTML(msg.role) : '';
+        const safeContact = msg.contact ? escapeHTML(msg.contact) : '';
+        const safeContent = escapeHTML(msg.content).replace(/\n/g, '<br>');
+        html += `
+          <div class="message-item">
+            <div class="msg-meta">
+              <span class="msg-name">${safeName}</span>
+              ${safeRole ? `<span class="msg-role">${safeRole}</span>` : ''}
+              ${safeContact ? `<span class="msg-contact">联系方式：${safeContact}</span>` : ''}
+              <span class="msg-time">${formatTime(msg.time)}</span>
+            </div>
+            <div class="msg-content">${safeContent}</div>
+          </div>
+        `;
+      }
+      listContainer.innerHTML = html;
+    }
+
+    // 防止 XSS 的简单转义
+    function escapeHTML(str) {
+      const div = document.createElement('div');
+      div.appendChild(document.createTextNode(str));
+      return div.innerHTML;
+    }
+
+    // 表单提交
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const name = nameInput.value.trim();
+      const role = roleSelect.value;
+      const contact = contactInput.value.trim();
+      const content = contentInput.value.trim();
+
+      if (!name) {
+        nameInput.focus();
+        alert('请填写昵称');
+        return;
+      }
+      if (!role) {
+        roleSelect.focus();
+        alert('请选择身份');
+        return;
+      }
+      if (!content) {
+        contentInput.focus();
+        alert('请填写留言内容');
+        return;
+      }
+
+      const messages = loadMessages();
+      messages.push({
+        name: name,
+        role: role,
+        contact: contact,
+        content: content,
+        time: Date.now()
+      });
+      saveMessages(messages);
+
+      // 清空表单
+      nameInput.value = '';
+      roleSelect.value = '';
+      contactInput.value = '';
+      contentInput.value = '';
+
+      // 重新渲染
+      renderMessages();
+
+      // 滚动到留言列表
+      listContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    });
+
+    // 初始渲染
+    renderMessages();
+  })();
+</script>
+
+</body>
+</html>
