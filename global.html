@@ -41,19 +41,40 @@
   .page-title { margin-bottom: 6px; font-size: 24px; color: #2c5f2d; }
   .page-desc { font-size: 14px; color: #556055; margin-bottom: 24px; }
 
+  strong { color: #c0392b; font-weight: 700; }
+
   .section {
-    background: #fff; border-radius: 10px; padding: 24px 28px;
+    background: #fff; border-radius: 10px; padding: 0;
     box-shadow: 0 2px 10px rgba(0,0,0,.08); margin-bottom: 24px;
+    overflow: hidden;
   }
-  .section h2 {
-    font-size: 19px; color: #2c5f2d; margin-bottom: 12px;
-    padding-bottom: 8px; border-bottom: 2px solid #d8e8d8;
+  .section > details { margin: 0; }
+  .section > details > summary {
+    list-style: none;
+    cursor: pointer;
+    padding: 20px 28px;
+    font-size: 19px; color: #2c5f2d; font-weight: 700;
+    border-bottom: 2px solid #d8e8d8;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 10px;
+    transition: background .15s;
   }
+  .section > details > summary::-webkit-details-marker { display: none; }
+  .section > details > summary:hover { background: #f7faf7; }
+  .section > details > summary::after {
+    content: "▸";
+    font-size: 18px; color: #2c5f2d;
+    transition: transform .2s;
+    flex: 0 0 auto;
+  }
+  .section > details[open] > summary::after { transform: rotate(90deg); }
+  .section-body { padding: 20px 28px 24px; }
+
   .section h3 {
     font-size: 16px; color: #1d4d1e; margin: 18px 0 8px;
   }
-  .section p { font-size: 15px; color: #333; margin-bottom: 12px; }
-  .section p:last-child { margin-bottom: 0; }
+  .section-body > p { font-size: 15px; color: #333; margin-bottom: 12px; }
+  .section-body > p:last-child { margin-bottom: 0; }
 
   .figure {
     margin: 16px 0;
@@ -69,7 +90,6 @@
     font-style: italic;
   }
 
-  /* 两张图片同行排列 */
   .figure-row {
     display: flex;
     gap: 16px;
@@ -90,40 +110,54 @@
     display: block;
   }
 
+  /* 卡片并列布局 */
+  .card-row {
+    display: flex;
+    gap: 16px;
+    margin: 20px 0;
+    align-items: stretch;
+  }
+  .card-row > .fao-card,
+  .card-row > .cctv-card {
+    flex: 1 1 0;
+    min-width: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .card-row > .fao-card .fao-btn,
+  .card-row > .cctv-card .cctv-btn {
+    margin-top: auto;
+    align-self: flex-start;
+  }
+
   .data-box {
     background: #eef5ee; border-left: 4px solid #8fc98f;
     border-radius: 6px; padding: 14px 18px; margin: 16px 0;
     font-size: 14px; color: #2c5f2d;
   }
-  .data-box strong { color: #1d4d1e; }
 
   .link-box {
     background: #fbf8ec; border-left: 4px solid #f0c040;
     border-radius: 6px; padding: 14px 18px; margin: 16px 0;
     font-size: 14px; color: #5a4a1a;
   }
-  .link-box strong { color: #7a5a0a; }
 
   .highlight {
     background: #f0c040; color: #1d4d1e;
     padding: 1px 6px; border-radius: 4px; font-weight: 600;
   }
 
-  /* FAO 官网引用样式 */
   .fao-card {
     background: #f4f8fb; border: 1px solid #c8dbe8;
-    border-radius: 8px; padding: 18px 22px; margin: 20px 0;
+    border-radius: 8px; padding: 18px 22px;
   }
   .fao-card h4 {
     font-size: 15px; color: #1a5276; margin-bottom: 8px;
     display: flex; align-items: center; gap: 8px;
   }
-  .fao-card h4::before {
-    content: "🌐"; font-size: 16px;
-  }
-  .fao-card p {
-    font-size: 14px; color: #333; margin-bottom: 12px;
-  }
+  .fao-card h4::before { content: "🌐"; font-size: 16px; }
+  .fao-card p { font-size: 14px; color: #333; margin-bottom: 12px; }
   .fao-card .fao-btn {
     display: inline-block; background: #5a5a5a; color: #fff;
     padding: 6px 16px; border-radius: 4px; font-size: 13px;
@@ -131,21 +165,16 @@
   }
   .fao-card .fao-btn:hover { background: #333; }
 
-  /* 央视网引用样式 */
   .cctv-card {
     background: #fdf6f4; border: 1px solid #ecc9bf;
-    border-radius: 8px; padding: 18px 22px; margin: 20px 0;
+    border-radius: 8px; padding: 18px 22px;
   }
   .cctv-card h4 {
     font-size: 15px; color: #a33b26; margin-bottom: 8px;
     display: flex; align-items: center; gap: 8px;
   }
-  .cctv-card h4::before {
-    content: "📺"; font-size: 16px;
-  }
-  .cctv-card p {
-    font-size: 14px; color: #333; margin-bottom: 12px;
-  }
+  .cctv-card h4::before { content: "📺"; font-size: 16px; }
+  .cctv-card p { font-size: 14px; color: #333; margin-bottom: 12px; }
   .cctv-card .cctv-btn {
     display: inline-block; background: #b8452c; color: #fff;
     padding: 6px 16px; border-radius: 4px; font-size: 13px;
@@ -153,21 +182,96 @@
   }
   .cctv-card .cctv-btn:hover { background: #8f3420; }
 
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 14px;
+  }
+  .data-table th {
+    background: #2c5f2d; color: #fff;
+    padding: 10px 12px; text-align: left;
+    font-weight: 600;
+  }
+  .data-table td {
+    padding: 10px 12px; border-bottom: 1px solid #d8e8d8;
+    vertical-align: top;
+  }
+  .data-table tr:nth-child(even) td { background: #f7faf7; }
+  .data-table caption {
+    font-size: 13px; color: #556055; margin-bottom: 8px;
+    text-align: left; font-style: italic;
+  }
+
+  .task-card {
+    background: linear-gradient(135deg, #eef5ee 0%, #fbf8ec 100%);
+    border: 1px solid #c8dbe8;
+    border-radius: 10px;
+    padding: 22px 26px;
+    margin-top: 8px;
+  }
+  .task-card h3 { color: #1a5276; margin-top: 0; }
+  .task-card ol { margin: 12px 0 0 20px; font-size: 15px; }
+  .task-card li { margin-bottom: 14px; }
+
+  .fold-box {
+    margin-top: 8px;
+    border-radius: 6px;
+    overflow: hidden;
+    border-left: 4px solid #8fc98f;
+    background: #eef5ee;
+  }
+  .fold-box > details > summary {
+    list-style: none;
+    cursor: pointer;
+    padding: 8px 12px;
+    font-size: 13px;
+    color: #1d4d1e;
+    font-weight: 700;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .fold-box > details > summary::-webkit-details-marker { display: none; }
+  .fold-box > details > summary::before {
+    content: "▸";
+    font-size: 13px;
+    transition: transform .2s;
+  }
+  .fold-box > details[open] > summary::before { transform: rotate(90deg); }
+  .fold-box .fold-content {
+    padding: 4px 12px 12px;
+    font-size: 13px;
+    color: #2c5f2d;
+    line-height: 1.75;
+  }
+
+  .fold-box.yellow { border-left-color: #f0c040; background: #fbf8ec; }
+  .fold-box.yellow > details > summary { color: #7a5a0a; }
+  .fold-box.yellow .fold-content { color: #5a4a1a; }
+
   footer {
     text-align: center; padding: 24px 20px 40px;
     font-size: 12px; color: #7a857a;
   }
 
+  @media (max-width: 700px) {
+    .card-row { flex-direction: column; }
+    .card-row > .fao-card,
+    .card-row > .cctv-card { width: 100%; }
+  }
+
   @media (max-width: 600px) {
     .figure-row { flex-direction: column; }
     .figure-row .figure img { height: 200px; }
+    .data-table { font-size: 13px; }
+    .data-table th, .data-table td { padding: 8px 8px; }
+    .section > details > summary { padding: 16px 16px; font-size: 17px; }
+    .section-body { padding: 16px; }
   }
 
   @media (max-width: 480px) {
     header h1 { font-size: 20px; }
     .top-nav a { padding: 10px 9px; font-size: 13px; }
     main { padding: 0 12px; }
-    .section { padding: 18px 16px; }
     .page-title { font-size: 21px; }
   }
 </style>
@@ -193,97 +297,236 @@
   <h2 class="page-title">全球尺度看迭部：青藏高原东缘的生态孤岛</h2>
   <p class="page-desc">从行星尺度审视，理解一个西部小县为何与全球生态系统紧密相连。</p>
 
-  <!-- 一、全球坐标中的位置 -->
+  <!-- 一、迭部县在地球中的位置 -->
   <div class="section">
-    <h2>一、全球坐标中的位置</h2>
-    <p>迭部在全球地理坐标中的位置，决定了它独特的自然禀赋。从行星尺度审视，迭部地处<strong>青藏高原东部边缘</strong>，是这一“世界屋脊”向秦巴山地过渡的关键节点。青藏高原的隆升始于约2.4亿年前印度板块向北挤压，至今其边缘仍在持续抬升。迭部正位于这一仍在“生长”的高原东缘，承受着高原抬升与流水侵蚀的双重地质作用，形成了今日重峦迭嶂、山高谷深的地貌格局。</p>
+    <details open>
+      <summary>一、迭部县在地球中的位置</summary>
+      <div class="section-body">
+        <p>迭部县位于北纬 33°39′—34°20′、东经 102°55′—104°05′ 之间，地处<strong>青藏高原东部边缘</strong>，是这一“世界屋脊”向秦巴山地过渡的关键节点。从行星尺度看，迭部正处在印度板块与欧亚板块碰撞挤压所形成的青藏高原隆升带的前缘，高原抬升与流水侵蚀的双重地质作用，塑造了今日重峦迭嶂、山高谷深的地貌格局。</p>
 
-    <div class="data-box">
-      <strong>核心区位数据</strong><br>
-      迭部位于北纬 33°39′—34°20′、东经 102°55′—104°05′ 之间，总面积 <span class="highlight">5108.3 平方公里</span>，海拔跨度从约 1500 米至 4920 米。白龙江自西向东横贯全境，将群山分割为北侧迭山与南侧岷山。
-    </div>
+        <div class="data-box">
+          <strong>核心区位数据</strong><br>
+          迭部县总面积 <span class="highlight">5108.3 平方公里</span>，海拔跨度约 1500 米至 4920 米。白龙江自西向东横贯全境，将群山分割为北侧迭山与南侧岷山。全境属非典型性大陆性气候，冬无严寒，夏无酷暑。
+        </div>
 
-    <figure class="figure">
-      <img src="images/quanqiu-1.jpg" alt="位置">
+        <figure class="figure">
+          <img src="images/quanqiu-1.jpg" alt="迭部在全球及青藏高原位置示意">
         </figure>
+      </div>
+    </details>
   </div>
 
-  <!-- 二、全球气候变化下的迭部关联 -->
+  <!-- 二、世界屋脊与迭部县 -->
   <div class="section">
-    <h2>二、全球气候变化下的迭部关联</h2>
-    <p>迭部虽小，却与全球气候系统紧密相连。青藏高原是全球气候变化的敏感区，1961—2025 年间每十年升温 <span class="highlight">0.35℃</span>，高于同期全球平均水平。这一升温趋势对迭部所在的高山峡谷区产生直接影响：冰川退缩、冻土退化正在改变区域水文格局与山坡稳定性。</p>
-    <p>过去 60 年，青藏高原冰川面积整体缩减约 <span class="highlight">24%</span>，约 7000 条小冰川完全消失。尽管迭部境内以森林生态系统为主而非冰川主导，但作为白龙江上游重要水源涵养区，高原冰冻圈的持续变化将通过水系传导，影响迭部的水资源供给与生态安全。</p>
+    <details open>
+      <summary>二、世界屋脊与迭部县</summary>
+      <div class="section-body">
+        <p>青藏高原平均海拔超过 4000 米，是全球面积最大、海拔最高的高原，被誉为“<strong>世界屋脊</strong>”“地球第三极”和“<strong>亚洲水塔</strong>”。它发育了长江、黄河、澜沧江、雅鲁藏布江等亚洲多条大江大河，为东亚、东南亚、南亚提供了丰富的水资源。同时，青藏高原的热力与动力作用深刻影响着东亚乃至全球的天气气候格局，是我国“两屏三带”生态安全格局的重要组成部分，也是亚洲乃至北半球重要的<strong>生态安全屏障</strong>。</p>
+        <p>迭部县正位于这一生态屏障的东缘关键地带。全县植被覆盖率达 89.63%，森林覆盖率达 64.87%，拥有 1671 种高等级植物和 183 种野生珍稀动物。作为白龙江上游重要水源涵养区和长江上游生态屏障的组成部分，迭部的森林生态系统在涵养水源、保持水土、维护生物多样性等方面发挥着不可替代的作用。青藏高原的“屏障”功能，在迭部这一县域尺度上得到了具体而微的呈现。</p>
 
-    <div class="link-box">
-      <strong>教学提示</strong>：可以引导学生思考——全球升温 0.35℃/十年 这样看似微小的数字，为什么会对一个山区县的水源和山坡稳定产生实质影响？这正是“全球尺度”与“地方尺度”相互作用的典型例子。
-    </div>
+        <div class="figure-row">
+          <figure class="figure">
+            <img src="images/quanqiu-2.jpg" alt="高山峡谷区的森林植被示意">
+            <figcaption>示意：高山峡谷区的森林植被（图源：实景拍摄）</figcaption>
+          </figure>
+          <figure class="figure">
+            <img src="images/quanqiu-3.jpg" alt="高山田园与藏汉文化过渡区村落景观示意">
+            <figcaption>示意：农林牧复合景观（图源：微观迭部）</figcaption>
+          </figure>
+        </div>
+      </div>
+    </details>
   </div>
 
-  <!-- 三、全球视野下的生态价值 -->
+  <!-- 三、全球重要农业文化遗产与迭部县 -->
   <div class="section">
-    <h2>三、全球视野下的生态价值</h2>
-    <p>迭部的生态意义远超其县域尺度。全县<strong>植被覆盖率达 89.63%</strong>，<strong>森林覆盖率达 64.87%</strong>，拥有 1671 种高等级植物和 183 种野生珍稀动物，包括大熊猫、羚羊、雪豹等。更值得关注的是，迭部扎尕那的农林牧复合系统被 <strong>联合国粮农组织（FAO）</strong> 认定为“<span class="highlight">全球重要农业文化遗产</span>”。这意味着迭部不仅是一个中国县域，更是全球农业文化多样性保护网络中的正式成员。</p>
-    <p>从全球尺度看，迭部是青藏高原东缘生物多样性走廊的关键节点，其森林生态系统的完整性对整个长江上游生态屏障具有不可替代的价值。</p>
+    <details open>
+      <summary>三、全球重要农业文化遗产与迭部县</summary>
+      <div class="section-body">
+        <p>迭部扎尕那的农林牧复合系统于 2017 年被<strong>联合国粮农组织（FAO）</strong>认定为“<span class="highlight">全球重要农业文化遗产</span>”。这意味着迭部不仅是一个中国县域，更是全球农业文化多样性保护网络中的正式成员。</p>
 
-    <!-- 两张图片同行排列 -->
-    <div class="figure-row">
-      <!-- 森林植被图片 -->
-      <figure class="figure">
-        <img src="images/quanqiu-2.jpg" alt="高山峡谷区的森林植被示意">
-        <figcaption>示意：高山峡谷区的森林植被（图源：实景拍摄）</figcaption>
-      </figure>
+        <h3>扎尕那农林牧复合系统的农业生态系统特点</h3>
+        <p><strong>第一，垂直立体布局。</strong>扎尕那地处青藏高原、黄土高原、四川盆地三大地形交汇地带，平均海拔近 3000 米。当地居民将农田开垦在村寨与森林之间的缓坡上，形成旱作梯田景观，既保持土壤又涵养水源；更高处的草场用于放牧，森林则提供薪材、菌类等林下产品，形成“<strong>农养牧、牧肥田、林护生</strong>”的垂直循环格局。</p>
+        <p><strong>第二，半农半牧的轮转智慧。</strong>群众“夏上高山、冬回河谷”，牲畜四季有草可食，高原脆弱的草场得以轮休生息。牦牛藏羊提供肉奶，牛羊粪便还田肥地，农牧业形成良性循环。林下采摘菌子、散养蕨麻猪等林下经济，进一步丰富了系统产出。</p>
+        <p><strong>第三，藏汉农耕文化的融合体。</strong>该系统是汉地农耕文化与藏传游牧文化融合的产物，农林牧生产与藏传佛教文化、民俗节庆（如洛萨节、插箭节）相互交织，形成了人与自然和谐共生的文化景观。</p>
 
-      <!-- 藏汉过渡区与复合农业景观图片 -->
-      <figure class="figure">
-        <img src="images/quanqiu-3.jpg" alt="高山田园与藏汉文化过渡区村落景观示意">
-        <figcaption>示意：农林牧复合景观（图源：微观迭部）</figcaption>
-      </figure>
-    </div>
+        <!-- 两个链接并列排放 -->
+        <div class="card-row">
+          <div class="fao-card">
+            <h4>联合国粮农组织（FAO）官网收录介绍</h4>
+            <p><strong>中国 · 迭部扎尕那农林牧复合系统</strong></p>
+            <p>该系统毗邻三大地貌和气候带。这一藏汉文化过渡区是基于对生态系统的深入了解对不同海拔高度农业地貌开展综合管理的典范。</p>
+            <a href="https://www.fao.org/giahs/around-the-world/detail//china-zhagana-system/zh/" target="_blank" class="fao-btn">看更多 >></a>
+          </div>
 
-    <!-- FAO 官网图文引用 -->
-    <div class="fao-card">
-      <h4>联合国粮农组织（FAO）官网收录介绍</h4>
-      <p><strong>中国 · 迭部扎尕那农林牧复合系统</strong></p>
-      <p>该系统毗邻三大地貌和气候带。这一藏汉文化过渡区是基于对生态系统的深入了解对不同海拔高度农业地貌开展综合管理的典范。</p>
-      <a href="https://www.fao.org/giahs/around-the-world/detail//china-zhagana-system/zh/" target="_blank" class="fao-btn">看更多 >></a>
-    </div>
-
-    <!-- 央视网视频引用 -->
-    <div class="cctv-card">
-      <h4>央视网《田野对望》节目报道</h4>
-      <p><strong>[田野对望] 甘肃迭部扎尕那的农林牧复合系统</strong></p>
-      <p>央视网 2024 年 11 月 22 日播出，以迭部扎尕那农林牧复合系统为案例，探讨中外农业文化遗产的异同与交流互鉴，可作为课堂教学的视频素材。</p>
-      <a href="https://tv.cctv.cn/2024/11/22/VIDEK652NyVIO386ejrkauhk241122.shtml" target="_blank" class="cctv-btn">观看视频 >></a>
-    </div>
-
-    <div class="data-box">
-      <strong>一个值得思考的问题</strong><br>
-      一个约 5 万人口的西部小县，为何能获得联合国的关注？答案在于：迭部的价值不取决于人口规模或经济总量，而取决于它在全球生态系统中承担的功能。这正是“全球尺度”视角的意义——让学生看到家乡与世界体系的真实连接。
-    </div>
+          <div class="cctv-card">
+            <h4>央视网《田野对望》节目报道</h4>
+            <p><strong>[田野对望] 甘肃迭部扎尕那的农林牧复合系统</strong></p>
+            <p>央视网 2024 年 11 月 22 日播出，以迭部扎尕那农林牧复合系统为案例，探讨中外农业文化遗产的异同与交流互鉴，可作为课堂教学的视频素材。</p>
+            <a href="https://tv.cctv.cn/2024/11/22/VIDEK652NyVIO386ejrkauhk241122.shtml" target="_blank" class="cctv-btn">观看视频 >></a>
+          </div>
+        </div>
+      </div>
+    </details>
   </div>
 
-  <!-- 四、与初中地理教材的链接 -->
+  <!-- 四、全球气候变化下的迭部县 -->
   <div class="section">
-    <h2>四、与初中地理教材的链接</h2>
-    <p>迭部的全球尺度内容，可以与人教版初中地理教材的多个章节建立直接链接。最核心的契合点集中在<strong>七年级上册“陆地和海洋”</strong>与<strong>八年级上册“中国的自然环境”</strong>，同时也能呼应“发展与合作”中关于国际合作与全球议题的内容。</p>
+    <details open>
+      <summary>四、全球气候变化下的迭部县</summary>
+      <div class="section-body">
+        <p>全球气候变化并非一个遥远的概念，它正通过青藏高原这一敏感区，层层传导到迭部的山水之间。理解这条“<strong>全球—高原—县域</strong>”的影响链条，是培养学生生态文明意识与家国情怀的重要切入点。</p>
 
-    <h3>与七年级上册的链接</h3>
-    <p><strong>第三章“陆地和海洋”第二节“世界的地形”与第三节“海陆的变迁”</strong>：迭部地处青藏高原东部边缘，而青藏高原本身就是板块运动的产物。教材在“海陆的变迁”中会讲到板块构造学说，青藏高原正是印度板块与欧亚板块碰撞挤压抬升形成的典型例证。迭部所在的高山峡谷地貌，是这一宏观地质过程在区域尺度上的具体表现。教学链接：先让学生理解青藏高原的成因（全球/板块尺度），再出示迭部“重峦迭嶂、山高谷深”的地貌描述，引导学生思考“家乡的山为什么这么高、谷为什么这么深”，把抽象板块理论落到脚下的土地。</p>
-    <p><strong>第四章“天气与气候”</strong>：青藏高原对东亚季风系统有深刻影响，它通过热力作用改变大气环流，进而影响中国东部降水格局。迭部属“非典型性大陆性气候，冬无严寒，夏无酷暑”，这种区域气候特征与高原的热力效应存在关联。虽然教材对季风成因的讲解较浅，但可以作为“气候受地形影响”的拓展案例。</p>
+        <h3>全球气候变化 → 青藏高原的响应</h3>
+        <p>青藏高原是全球气候变化最为敏感的地带之一。研究表明，近 50 年来青藏高原暖湿化显著，<strong>年平均气温增速超过同期全球平均水平的两倍</strong>，极端高温和极端降水事件频繁发生。冰川退缩、冻土消融、“水塔”功能不稳定性加大等现象随之加剧，气象灾害及衍生灾害增多。青藏高原的升温不仅改变自身的水文格局，还通过大气环流与水系传导，影响下游广大地区。</p>
 
-    <h3>与八年级上册的链接</h3>
-    <p><strong>第二章“中国的自然环境”第一节“地形和地势”</strong>：教材明确讲述中国地势“西高东低，呈三级阶梯状分布”，第一级阶梯就是青藏高原，平均海拔 4000 米以上。迭部海拔在 1600—4920 米之间，正处于第一级阶梯向第二级阶梯过渡的边缘地带。教学时可以让学生在中国地形图上找到迭部的位置，判断它位于哪一级阶梯或过渡带，理解“青藏高原东缘”这个地理坐标在教材知识体系中的确切含义。同时，教材提到“山区面积广大”是中国地形的显著特征，迭部全境为高山峡谷，正是山区县域的典型样本。</p>
-    <p><strong>第二章“中国的自然环境”第二节“气候”和相关章节</strong>：迭部地处长江与黄河水域分界线附近，这一位置信息可以链接到教材中关于中国主要水系和分水岭的内容。白龙江作为嘉陵江支流，属于长江流域，而迭部北部山区则是黄河支流的发源地，这种“一县跨两流域”的特点在县域尺度上直观展示了中国水系格局的微观切片。</p>
-    <p><strong>第八章“西北地区”和相关区域地理内容（视教材版本）</strong>：迭部隶属甘南藏族自治州，有藏、汉、回等 17 个民族，可以与教材中关于民族分布“大杂居、小聚居”的特点相链接。扎尕那农林牧复合系统被联合国粮农组织认定为“全球重要农业文化遗产”，这可以链接到“发展与合作”中关于国际组织（FAO）和全球文化多样性保护的内容，让学生看到一个县域如何通过国际合作获得全球认可。</p>
+        <h3>青藏高原 → 迭部县的传导</h3>
+        <p>迭部县地处青藏高原东缘，其气候变化趋势与高原整体暖湿化背景一致，但又有局地特征。根据甘南州农区气象观测资料分析，1990—2022 年间迭部县气温呈显著上升趋势，气候倾向率约为 <span class="highlight">0.39℃/10 年</span>；降水量同样呈增加趋势，气候倾向率为 <span class="highlight">25.9 mm/10 年</span>。另据白龙江流域（迭部—武都段）的研究，近 40 年年均温加速上升约 0.198℃/10 年，降水总量缓升，但秋季暴雨量增幅突出。这意味着迭部面临的不只是“变暖”，还有降水节律改变带来的<strong>山地灾害风险上升</strong>——暖湿化梯度正在驱动灾害带向高海拔区域迁移。</p>
 
-    <div class="link-box">
-      <strong>教学落点建议</strong>：做课件时，建议采用“<strong>教材知识点 → 迭部案例 → 回到教材理解</strong>”的三段式结构。例如讲“地势三级阶梯”时：先展示教材标准示意图（青藏高原为第一级），再嵌入迭部的海拔数据和地形描述，最后让学生回答“迭部处于阶梯的什么位置？它对河流流向有什么影响？”这样，乡土素材不是装饰，而是帮助学生理解教材抽象概念的具体锚点。
-    </div>
+        <table class="data-table">
+          <caption>表：青藏高原与迭部县气温、降水变化趋势对比（基于已有研究数据）</caption>
+          <thead>
+            <tr>
+              <th>区域</th>
+              <th>气温变化趋势</th>
+              <th>降水变化趋势</th>
+              <th>数据时段/来源</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>青藏高原（整体）</td>
+              <td>年平均气温增速超过同期全球平均的两倍</td>
+              <td>暖湿化显著，东部半湿润区降水增加明显</td>
+              <td>近 50 年 / 科普中国、ScienceDirect</td>
+            </tr>
+            <tr>
+              <td>迭部县（甘南农区站）</td>
+              <td>约 <strong>0.39℃/10 年</strong>（上升）</td>
+              <td>约 <strong>25.9 mm/10 年</strong>（增加）</td>
+              <td>1990—2022 / 气象观测资料分析</td>
+            </tr>
+            <tr>
+              <td>白龙江流域（迭部—武都段）</td>
+              <td>约 <strong>0.198℃/10 年</strong>（加速上升）</td>
+              <td>总量缓升（+6.41 mm/10 年），秋季暴雨量突出</td>
+              <td>1980—2020 / 栅格气象数据研究</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="link-box">
+          <strong>思政融入要点</strong>：在讲解气候变化时，可以引导学生从三个层面理解“责任与担当”。<strong>国家层面</strong>：中国提出“双碳”目标，青藏高原的生态保护是国家生态文明建设的重要组成；<strong>区域层面</strong>：迭部作为长江上游水源涵养区，其森林保护直接关系下游数亿人的用水安全，“上游意识”就是大局意识；<strong>个人层面</strong>：家乡的每一片林、每一条溪，都与全国乃至全球的气候系统相连，保护家乡生态就是参与全球治理。可以让学生讨论：“作为迭部的一名中学生，你能为‘双碳’目标做一件什么具体的事？”
+        </div>
+      </div>
+    </details>
+  </div>
+
+  <!-- 五、与初中地理教材的链接 -->
+  <div class="section">
+    <details open>
+      <summary>五、与初中地理教材的链接</summary>
+      <div class="section-body">
+        <p>迭部的全球尺度内容，可与人教版初中地理教材多个章节建立直接链接。下表以“<strong>教材知识点 → 迭部案例 → 核心素养</strong>”为线索呈现。</p>
+
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th style="width:18%">具体章节</th>
+              <th style="width:22%">核心知识点</th>
+              <th style="width:38%">教学切入点（迭部案例）</th>
+              <th style="width:22%">核心素养</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>七年级上册<br>第二章 陆地和海洋<br>第二节 海陆的变迁</td>
+              <td>板块构造学说；青藏高原的成因</td>
+              <td>先讲印度板块与欧亚板块碰撞抬升青藏高原（全球/板块尺度），再出示迭部“重峦迭嶂、山高谷深”的地貌，引导学生思考“家乡的山为什么这么高、谷为什么这么深”，把抽象板块理论落到脚下的土地。</td>
+              <td><strong>综合思维</strong>（宏观地质过程与区域地貌的关联）；<strong>区域认知</strong>（家乡在板块格局中的位置）</td>
+            </tr>
+            <tr>
+              <td>七年级上册<br>第三章 天气与气候<br>第四节 世界的气候</td>
+              <td>地形对气候的影响；高原热力作用</td>
+              <td>青藏高原通过热力作用影响东亚季风系统，迭部“冬无严寒、夏无酷暑”的非典型性大陆性气候与高原地形效应相关。可作为“地形如何塑造家乡气候”的探究素材。</td>
+              <td><strong>综合思维</strong>（地形—气候的因果链条）；<strong>地理实践力</strong>（观察家乡气候特征并尝试解释）</td>
+            </tr>
+            <tr>
+              <td>八年级上册<br>第五章 发展与合作<br>（或相关章节）</td>
+              <td>国际合作；国际组织；文化多样性保护</td>
+              <td>扎尕那农林牧复合系统被 FAO 认定为全球重要农业文化遗产。以此为切入点，让学生理解一个西部县域如何通过国际合作获得全球认可，以及国际组织在文化多样性保护中的作用。</td>
+              <td><strong>区域认知</strong>（全球联系中的家乡）；<strong>人地协调观</strong>（传统农业智慧对可持续发展的启示）</td>
+            </tr>
+            <tr>
+              <td>八年级上册<br>第二章 中国的自然环境<br>第四节 自然灾害（拓展）</td>
+              <td>自然灾害的成因与分布；气候变化的影响</td>
+              <td>结合白龙江流域暖湿化背景下暴雨增多、山地灾害风险上升的研究，引导学生讨论：气候变化如何改变家乡的灾害风险？我们可以做哪些适应与防范？</td>
+              <td><strong>人地协调观</strong>（人类活动与气候风险的应对）；<strong>地理实践力</strong>（灾害防范意识与行动）</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="link-box yellow fold-box">
+          <details>
+            <summary>教学落点建议（点击展开）</summary>
+            <div class="fold-content">
+              采用“<strong>教材知识点 → 迭部案例 → 回到教材理解</strong>”的三段式结构。乡土素材不是装饰，而是帮助学生理解教材抽象概念的具体锚点。例如讲“海陆的变迁”时，先展示教材中板块碰撞的示意图，再嵌入迭部“重峦迭嶂、山高谷深”的地貌与青藏高原隆升背景，最后让学生回答“迭部的山是怎么‘长’出来的？它与板块运动有什么关系？”
+            </div>
+          </details>
+        </div>
+      </div>
+    </details>
+  </div>
+
+  <!-- 六、互动探究任务 -->
+  <div class="section">
+    <details open>
+      <summary>六、互动探究任务</summary>
+      <div class="section-body">
+        <div class="task-card">
+          <h3>任务：为迭部制作一张“全球连接名片”</h3>
+          <p style="font-size:15px; margin-bottom:12px;">假设你是一名迭部县的“生态推介员”，需要向外界说明迭部与全球体系的三重连接。请以小组为单位完成以下探究：</p>
+          <ol>
+            <li><strong>定位连接</strong>：在地图或地球仪上指出迭部的位置，用一句话说明它与青藏高原、与亚洲水系的关系。
+              <div class="fold-box">
+                <details>
+                  <summary>地理提示（点击展开）</summary>
+                  <div class="fold-content">
+                    先找纬度带（北纬 33°—34°）与青藏高原东缘，再找白龙江—嘉陵江—长江的水系归属线索；注意“位置”要同时说清绝对位置（经纬度）和相对位置（与高原、水系的关系）。
+                  </div>
+                </details>
+              </div>
+            </li>
+            <li><strong>遗产连接</strong>：查阅 FAO 全球重要农业文化遗产名录中扎尕那系统的介绍，提炼出<strong>两个</strong>最能体现“全球价值”的农业生态特点，并解释为什么这些特点对世界其他山区也有借鉴意义。
+              <div class="fold-box">
+                <details>
+                  <summary>地理提示（点击展开）</summary>
+                  <div class="fold-content">
+                    从“垂直立体布局”“半农半牧轮转”“藏汉文化融合”中任选两个，用“海拔—土地利用—生产方式”的链条说明其生态合理性；思考山区共同面临的坡度大、生态脆弱等问题，这些特点为什么具有普遍借鉴意义。
+                  </div>
+                </details>
+              </div>
+            </li>
+            <li><strong>气候连接</strong>：结合本页提供的气温降水数据，讨论：如果迭部未来 10 年继续保持升温增湿趋势，你认为对当地森林、农业、河流分别可能产生什么影响？至少提出一条“适应建议”。
+              <div class="fold-box">
+                <details>
+                  <summary>地理提示（点击展开）</summary>
+                  <div class="fold-content">
+                    用“气温↑、降水↑且季节分配改变”作为前提，分别推理对森林（病虫害、火灾、植被带迁移）、农业（作物熟制、灾害风险）、河流（径流量、泥沙、洪水）的影响；适应建议要具体可操作，如调整种植结构、加强山地灾害监测、保护水源涵养林等。
+                  </div>
+                </details>
+              </div>
+            </li>
+          </ol>
+          <p style="font-size:14px; color:#556055; margin-top:14px; margin-bottom:0;">成果形式：一张 A3 手绘或电子海报，包含地图标注、关键数据、核心观点。下节课分组展示，每人用 1 分钟说明自己小组的“全球连接”结论。</p>
+        </div>
+      </div>
+    </details>
   </div>
 </main>
 
 <footer>
-  数据来源：迭部县人民政府、联合国粮农组织、央视网、甘南州统计公报 · 教学用途网站
+  数据来源：迭部县人民政府、联合国粮农组织、央视网、科普中国、甘南州气象观测研究、白龙江流域相关研究 · 教学用途网站
 </footer>
 
 </body>
