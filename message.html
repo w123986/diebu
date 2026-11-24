@@ -200,7 +200,7 @@
     font-size: 12px;
     margin-left: auto;
   }
-  .message-item .msg-content {
+  .teacher-reply{margin-top:10px;padding:10px 12px;border-radius:6px;background:#edf5ed;color:#285b2a;font-size:14px;white-space:pre-wrap;word-break:break-word}\n  .message-item .msg-content {
     font-size: 14px;
     color: #2d3f2d;
     white-space: pre-wrap;
@@ -284,7 +284,7 @@
   <a href="province.html">省域尺度</a>
   <a href="county.html">县域尺度</a>
   <a href="red.html">长征精神</a>
-  <a href="message.html" class="active">互动留言</a>
+  <a href="message.html" class="active">互动留言</a>\n  <a href="admin.html">教师管理</a>
 </nav>
 
 <main>
@@ -322,7 +322,7 @@
       </div>
       <div class="form-actions">
         <button type="submit" class="btn-submit">发表留言</button>
-        <span class="form-hint">* 为必填项。留言仅用于教学交流。</span>
+        <span class="form-hint">* 为必填项。留言用于教学交流，请勿填写电话、住址等个人敏感信息。</span>
       </div>
     </form>
 
@@ -352,130 +352,19 @@
   数据来源：迭部县人民政府、联合国粮农组织、甘南州统计公报 · 教学用途网站
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-  (function() {
-    const STORAGE_KEY = 'diebu_messages_v2';
-    const form = document.getElementById('messageForm');
-    const nameInput = document.getElementById('msgName');
-    const roleSelect = document.getElementById('msgRole');
-    const contactInput = document.getElementById('msgContact');
-    const contentInput = document.getElementById('msgContent');
-    const listContainer = document.getElementById('messageList');
-
-    // 从 localStorage 读取留言列表
-    function loadMessages() {
-      try {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        return raw ? JSON.parse(raw) : [];
-      } catch (e) {
-        return [];
-      }
-    }
-
-    // 保存留言列表到 localStorage
-    function saveMessages(messages) {
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
-      } catch (e) {
-        // localStorage 不可用或已满，静默失败
-      }
-    }
-
-    // 格式化时间
-    function formatTime(ts) {
-      const d = new Date(ts);
-      const pad = (n) => String(n).padStart(2, '0');
-      return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
-    }
-
-    // 渲染留言列表
-    function renderMessages() {
-      const messages = loadMessages();
-      if (!messages.length) {
-        listContainer.innerHTML = '<p class="empty-tip">暂无留言，来写下第一条吧 ✨</p>';
-        return;
-      }
-      // 按时间倒序
-      messages.sort((a, b) => b.time - a.time);
-      let html = '';
-      for (const msg of messages) {
-        const safeName = escapeHTML(msg.name);
-        const safeRole = msg.role ? escapeHTML(msg.role) : '';
-        const safeContact = msg.contact ? escapeHTML(msg.contact) : '';
-        const safeContent = escapeHTML(msg.content).replace(/\n/g, '<br>');
-        html += `
-          <div class="message-item">
-            <div class="msg-meta">
-              <span class="msg-name">${safeName}</span>
-              ${safeRole ? `<span class="msg-role">${safeRole}</span>` : ''}
-              ${safeContact ? `<span class="msg-contact">联系方式：${safeContact}</span>` : ''}
-              <span class="msg-time">${formatTime(msg.time)}</span>
-            </div>
-            <div class="msg-content">${safeContent}</div>
-          </div>
-        `;
-      }
-      listContainer.innerHTML = html;
-    }
-
-    // 防止 XSS 的简单转义
-    function escapeHTML(str) {
-      const div = document.createElement('div');
-      div.appendChild(document.createTextNode(str));
-      return div.innerHTML;
-    }
-
-    // 表单提交
-    form.addEventListener('submit', function(e) {
-      e.preventDefault();
-
-      const name = nameInput.value.trim();
-      const role = roleSelect.value;
-      const contact = contactInput.value.trim();
-      const content = contentInput.value.trim();
-
-      if (!name) {
-        nameInput.focus();
-        alert('请填写昵称');
-        return;
-      }
-      if (!role) {
-        roleSelect.focus();
-        alert('请选择身份');
-        return;
-      }
-      if (!content) {
-        contentInput.focus();
-        alert('请填写留言内容');
-        return;
-      }
-
-      const messages = loadMessages();
-      messages.push({
-        name: name,
-        role: role,
-        contact: contact,
-        content: content,
-        time: Date.now()
-      });
-      saveMessages(messages);
-
-      // 清空表单
-      nameInput.value = '';
-      roleSelect.value = '';
-      contactInput.value = '';
-      contentInput.value = '';
-
-      // 重新渲染
-      renderMessages();
-
-      // 滚动到留言列表
-      listContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    });
-
-    // 初始渲染
-    renderMessages();
-  })();
+(function(){
+const db=window.supabase.createClient("https://naqyeawdjmgalvkbgivy.supabase.co","sb_publishable_zS4wxEUR3-bbEWPMZlOxQ_3MCfQPWI");
+const form=document.getElementById("messageForm"),list=document.getElementById("messageList");
+const nameInput=document.getElementById("msgName"),roleInput=document.getElementById("msgRole"),contentInput=document.getElementById("msgContent"),button=form.querySelector('button[type="submit"]');
+function el(tag,cls,txt){const n=document.createElement(tag);if(cls)n.className=cls;if(txt!==undefined)n.textContent=txt;return n;}
+function render(rows){list.replaceChildren();if(!rows.length){list.append(el("p","empty-tip","暂无留言，来写下第一条吧 ✨"));return;}
+rows.forEach(m=>{const item=el("div","message-item"),meta=el("div","msg-meta");meta.append(el("span","msg-name",m.name||"匿名用户"));if(m.role)meta.append(el("span","msg-role",m.role));meta.append(el("span","msg-time",m.created_at?new Date(m.created_at).toLocaleString("zh-CN",{hour12:false}):""));item.append(meta,el("div","msg-content",m.content||""));if(m.teacher_reply){const r=el("div","teacher-reply");r.append(el("strong","","教师回复："),el("span","",m.teacher_reply));item.append(r);}list.append(item);});}
+async function load(){list.replaceChildren(el("p","empty-tip","正在加载留言…"));const {data,error}=await db.from("diebu_messages").select("id,name,role,content,teacher_reply,created_at").order("created_at",{ascending:false}).limit(100);if(error){console.error(error);list.replaceChildren(el("p","empty-tip","留言暂时无法加载，请稍后刷新页面。"));return;}render(data||[]);}
+form.addEventListener("submit",async ev=>{ev.preventDefault();const name=nameInput.value.trim(),role=roleInput.value,content=contentInput.value.trim();if(!name||!role||!content){alert("请填写昵称、身份和留言内容。");return;}button.disabled=true;button.textContent="正在发表…";const {error}=await db.from("diebu_messages").insert([{name,role,content}]);button.disabled=false;button.textContent="发表留言";if(error){console.error(error);alert("发表失败，请检查 Supabase 表结构及 RLS 权限后重试。");return;}form.reset();await load();list.scrollIntoView({behavior:"smooth",block:"nearest"});});
+load();document.addEventListener("visibilitychange",()=>{if(!document.hidden)load();});
+})();
 </script>
 
 </body>
