@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>中国尺度看迭部 · 交互式地图（高德卫星影像）</title>
+<title>中国尺度看迭部 · 左侧导航交互地图</title>
 <!-- 引入 Leaflet 地图库的 CSS -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <style>
@@ -13,18 +13,22 @@
     background: #f4f6f4;
     color: #1f2d1f;
     line-height: 1.8;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
   }
 
   header {
     background: #2c5f2d;
     color: #fff;
-    padding: 28px 20px;
+    padding: 20px 20px;
     text-align: center;
+    flex-shrink: 0;
   }
-  header h1 { font-size: 26px; letter-spacing: 2px; }
-  header p  { font-size: 14px; opacity: .85; margin-top: 6px; }
+  header h1 { font-size: 24px; letter-spacing: 2px; }
+  header p  { font-size: 14px; opacity: .85; margin-top: 4px; }
 
-  /* 顶部导航栏 */
+  /* 顶部导航栏（保留小屏或辅助跳转） */
   .top-nav {
     display: flex;
     justify-content: center;
@@ -36,6 +40,7 @@
     top: 0;
     z-index: 1000;
     box-shadow: 0 2px 6px rgba(0,0,0,.12);
+    flex-shrink: 0;
   }
   .top-nav a {
     color: #d8e8d8;
@@ -49,19 +54,114 @@
   .top-nav a:hover { color: #fff; border-bottom-color: #8fc98f; }
   .top-nav a.active { color: #fff; border-bottom-color: #f0c040; font-weight: 600; }
 
-  /* 主内容区布局 */
-  .content-container {
-    max-width: 1100px;
-    margin: 32px auto;
+  /* 主布局：左侧标题栏 + 右侧内容区 */
+  .main-wrapper {
+    display: flex;
+    flex: 1;
+    max-width: 1300px;
+    margin: 24px auto;
     padding: 0 20px;
+    gap: 24px;
+    width: 100%;
+    align-items: flex-start;
+  }
+
+  /* 左侧导航（点击切换内容） */
+  .sidebar {
+    width: 260px;
+    flex-shrink: 0;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,.06);
+    padding: 16px 0;
+    position: sticky;
+    top: 74px; /* 顶部导航高度预留 */
+    max-height: calc(100vh - 100px);
+    overflow-y: auto;
+    border: 1px solid #e0ebe0;
+  }
+  .sidebar h3 {
+    font-size: 15px;
+    color: #2c5f2d;
+    padding: 8px 18px 10px;
+    border-bottom: 2px solid #eef3ee;
+    margin-bottom: 6px;
+    letter-spacing: 1px;
+  }
+  .sidebar-item {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: transparent;
+    border: none;
+    padding: 14px 18px;
+    font-size: 15px;
+    color: #2d3e2d;
+    cursor: pointer;
+    transition: background 0.15s, border-left 0.15s, color 0.15s;
+    border-left: 4px solid transparent;
+    font-family: inherit;
+    font-weight: 500;
+  }
+  .sidebar-item:hover {
+    background: #f0f7f0;
+    color: #1d4d1e;
+  }
+  .sidebar-item.active {
+    background: #eef5ee;
+    border-left-color: #f0c040;
+    color: #1d4d1e;
+    font-weight: 700;
+  }
+  .sidebar-item .badge {
+    font-size: 11px;
+    background: #d0dcd0;
+    color: #2c5f2d;
+    border-radius: 10px;
+    padding: 0 8px;
+    margin-left: 8px;
+    font-weight: 400;
+    display: inline-block;
+    line-height: 18px;
+  }
+  .sidebar-item.active .badge {
+    background: #f0c040;
+    color: #1d4d1e;
+  }
+
+  /* 右侧内容面板 */
+  .content-panel {
+    flex: 1;
+    min-width: 0;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,.06);
+    padding: 24px 28px 32px;
+    border: 1px solid #e0ebe0;
+    position: relative;
+    min-height: 520px;
+  }
+
+  /* 内容区块（默认隐藏，通过JS控制显示） */
+  .content-section {
+    display: none;
+    animation: fadeIn 0.2s ease;
+  }
+  .content-section.active-section {
+    display: block;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0.6; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
   }
 
   .section-title {
     font-size: 22px;
     color: #2c5f2d;
     border-left: 5px solid #2c5f2d;
-    padding-left: 12px;
-    margin-bottom: 20px;
+    padding-left: 14px;
+    margin-bottom: 18px;
+    font-weight: 600;
   }
 
   /* 交互地图板块 */
@@ -70,21 +170,21 @@
     border-radius: 10px;
     overflow: hidden;
     box-shadow: 0 2px 10px rgba(0,0,0,.08);
-    margin-bottom: 30px;
+    margin-bottom: 20px;
   }
   .map-header {
-    padding: 12px 18px;
+    padding: 10px 16px;
     background: #eef3ee;
     border-bottom: 1px solid #d0dcd0;
     display: flex;
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 8px;
   }
-  .map-header h2 { font-size: 16px; color: #2c5f2d; }
+  .map-header h2 { font-size: 15px; color: #2c5f2d; }
   .map-tips { font-size: 12px; color: #7a857a; }
-  #china-map { width: 100%; height: 420px; z-index: 1; }
+  #china-map { width: 100%; height: 380px; z-index: 1; }
   .leaflet-control-attribution { font-size: 10px !important; }
 
   /* 知识点卡片布局 */
@@ -92,12 +192,12 @@
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 20px;
-    margin-bottom: 30px;
+    margin-bottom: 10px;
     align-items: start;
   }
   .info-card {
     background: #fff;
-    padding: 20px;
+    padding: 18px 20px;
     border-radius: 10px;
     box-shadow: 0 2px 10px rgba(0,0,0,.05);
     border-top: 4px solid #8fc98f;
@@ -105,12 +205,12 @@
   .info-card h3 {
     font-size: 16px;
     color: #1d4d1e;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
   }
   .info-card p {
     font-size: 14px;
     color: #556055;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
   }
   .highlight-text { color: #8a2b1d; font-weight: bold; }
   .highlight {
@@ -121,7 +221,7 @@
   /* 数据框样式 */
   .data-box {
     background: #eef5ee; border-left: 4px solid #8fc98f;
-    border-radius: 6px; padding: 14px 18px; margin: 16px 0;
+    border-radius: 6px; padding: 12px 16px; margin: 12px 0;
     font-size: 14px; color: #2c5f2d;
   }
   .data-box strong { color: #1d4d1e; }
@@ -130,8 +230,8 @@
   .img-compare-container {
     display: flex;
     gap: 10px;
-    margin-top: 15px;
-    margin-bottom: 5px;
+    margin-top: 12px;
+    margin-bottom: 4px;
   }
   .img-compare-item {
     flex: 1;
@@ -141,7 +241,7 @@
   }
   .img-compare-item img {
     width: 100%;
-    height: 120px;
+    height: 110px;
     object-fit: cover;
     border-radius: 6px;
     background: #eef3ee;
@@ -149,16 +249,16 @@
   .img-compare-item span {
     font-size: 12px;
     color: #7a857a;
-    margin-top: 5px;
+    margin-top: 4px;
     text-align: center;
   }
   .img-single-container {
-    margin-top: 15px;
+    margin-top: 12px;
     text-align: center;
   }
   .img-single-container img {
     width: 100%;
-    height: 150px;
+    height: 140px;
     object-fit: cover;
     border-radius: 6px;
     background: #eef3ee;
@@ -167,7 +267,7 @@
     display: block;
     font-size: 12px;
     color: #7a857a;
-    margin-top: 5px;
+    margin-top: 4px;
   }
 
   /* 教材链接模块样式 */
@@ -176,13 +276,13 @@
     border-radius: 10px;
     border-left: 5px solid #f0c040;
     box-shadow: 0 2px 10px rgba(0,0,0,.05);
-    padding: 20px;
-    margin-bottom: 30px;
+    padding: 16px 18px;
+    margin-bottom: 10px;
   }
   .textbook-link-box h3 {
     font-size: 17px;
     color: #8a2b1d;
-    margin-bottom: 15px;
+    margin-bottom: 12px;
     display: flex;
     align-items: center;
     gap: 8px;
@@ -190,11 +290,11 @@
   .textbook-table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 14px;
+    font-size: 13px;
   }
   .textbook-table th, .textbook-table td {
     border: 1px solid #e0e7e0;
-    padding: 12px;
+    padding: 10px;
     text-align: left;
     vertical-align: top;
   }
@@ -213,7 +313,6 @@
     border-radius: 4px;
     margin-right: 5px;
   }
-  /* 核心素养关键词标红加粗 */
   .core-literacy {
     color: #c0392b;
     font-weight: bold;
@@ -224,36 +323,80 @@
     background: #2c5f2d;
     color: #fff;
     border: none;
-    padding: 8px 15px;
+    padding: 8px 16px;
     border-radius: 5px;
     cursor: pointer;
-    font-size: 13px;
+    font-size: 14px;
     transition: background 0.2s;
+    margin-top: 6px;
   }
   .task-btn:hover { background: #1d4d1e; }
   .task-feedback {
     display: none;
     margin-top: 12px;
-    padding: 10px;
+    padding: 12px 16px;
     background: #fdf6f0;
     border-left: 3px solid #8a2b1d;
-    font-size: 13px;
+    font-size: 14px;
     color: #8a2b1d;
+    border-radius: 0 8px 8px 0;
   }
 
   footer {
     text-align: center;
-    padding: 24px 20px 40px;
+    padding: 18px 20px 30px;
     font-size: 12px;
     color: #7a857a;
+    flex-shrink: 0;
   }
 
-  @media (max-width: 760px) {
+  @media (max-width: 900px) {
+    .main-wrapper {
+      flex-direction: column;
+      padding: 0 12px;
+      gap: 16px;
+    }
+    .sidebar {
+      width: 100%;
+      position: static;
+      max-height: none;
+      display: flex;
+      flex-wrap: wrap;
+      padding: 8px 8px;
+      gap: 4px;
+      border-radius: 10px;
+    }
+    .sidebar h3 {
+      display: none;
+    }
+    .sidebar-item {
+      width: auto;
+      flex: 1 0 auto;
+      padding: 10px 14px;
+      font-size: 14px;
+      border-left: none;
+      border-bottom: 3px solid transparent;
+      border-radius: 6px;
+      text-align: center;
+    }
+    .sidebar-item.active {
+      border-left: none;
+      border-bottom-color: #f0c040;
+      background: #eef5ee;
+    }
+    .content-panel {
+      padding: 18px 16px;
+      width: 100%;
+    }
     .info-grid { grid-template-columns: 1fr; }
-    #china-map { height: 320px; }
-    .textbook-table th, .textbook-table td { padding: 8px; font-size: 13px; }
-    .img-compare-item img { height: 100px; }
-    .img-single-container img { height: 130px; }
+    #china-map { height: 300px; }
+    .textbook-table th, .textbook-table td { padding: 8px; font-size: 12px; }
+    .img-compare-item img { height: 90px; }
+    .img-single-container img { height: 120px; }
+  }
+  @media (max-width: 500px) {
+    .sidebar-item { font-size: 13px; padding: 8px 10px; }
+    .section-title { font-size: 19px; }
   }
 </style>
 </head>
@@ -264,7 +407,7 @@
   <p>中国尺度：三级阶梯过渡带上的山河样本</p>
 </header>
 
-<!-- 顶部导航栏 -->
+<!-- 顶部导航栏 (保留) -->
 <nav class="top-nav">
   <a href="index.html">首页</a>
   <a href="global.html">全球尺度</a>
@@ -275,129 +418,149 @@
   <a href="message.html">互动留言</a>
 </nav>
 
-<main class="content-container">
-  
-  <h2 class="section-title">一、地图上的中国视角</h2>
-  
-  <!-- 交互地图：展示中国地形与迭部位置（高德卫星影像版） -->
-  <div class="map-container">
-    <div class="map-header">
-      <h2>📍 拖动/缩放地图，观察迭部在中国三级阶梯中的位置</h2>
-      <span class="map-tips">当前视角：<strong id="scale-label">中国全域尺度</strong></span>
-    </div>
-    <div id="china-map"></div>
-  </div>
+<!-- 主布局：左侧标题栏 + 右侧内容区 -->
+<div class="main-wrapper">
+  <!-- 左侧导航栏 (点击切换) -->
+  <aside class="sidebar">
+    <h3>📌 内容导航</h3>
+    <button class="sidebar-item active" data-target="section-map">📍 地图上的中国视角 <span class="badge">1</span></button>
+    <button class="sidebar-item" data-target="section-terrain">⛰️ 地势阶梯 <span class="badge">2</span></button>
+    <button class="sidebar-item" data-target="section-mountain">🗻 山脉格局 <span class="badge">3</span></button>
+    <button class="sidebar-item" data-target="section-climate">🌤️ 气候特征 <span class="badge">4</span></button>
+    <button class="sidebar-item" data-target="section-river">💧 水系分水岭 <span class="badge">5</span></button>
+    <button class="sidebar-item" data-target="section-textbook">📚 教材链接与课标 <span class="badge">6</span></button>
+    <button class="sidebar-item" data-target="section-task">✏️ 互动探究任务 <span class="badge">7</span></button>
+  </aside>
 
-  <!-- 核心知识点解析 -->
-  <h2 class="section-title">二、核心知识点解析</h2>
+  <!-- 右侧内容面板 -->
+  <div class="content-panel">
 
-  <div class="info-grid">
-    <!-- 知识点1：地势阶梯 -->
-    <div class="info-card">
-      <h3>1. 地势阶梯：站在第一级与第二级之间</h3>
-      <p>中国地势“西高东低，呈三级阶梯状分布”，第一级阶梯以青藏高原为主体，平均海拔 4000 米以上；第二级阶梯以高原和盆地为主，海拔多在 1000—2000 米。迭部恰恰站在这两级阶梯的交界地带。</p>
-      <p>有资料明确指出，迭部地处<strong class="highlight-text">“中国地势三级阶梯中第一阶梯和第二阶梯的交界地带”</strong>。全境最低处约 <span class="highlight">1500 米</span>，最高处达 <span class="highlight">4920 米</span>，同一县域内海拔跨越近 3500 米，让教材上的“阶梯过渡”变得具体可感。</p>
-      
-      <div class="img-compare-container">
-        <div class="img-compare-item">
-          <img src="images/zhongguo-1.jpg"alt="高山峡谷地貌">
-          <span>高山峡谷</span>
+    <!-- 1. 地图视角 -->
+    <section id="section-map" class="content-section active-section">
+      <h2 class="section-title">一、地图上的中国视角</h2>
+      <div class="map-container">
+        <div class="map-header">
+          <h2>📍 拖动/缩放地图，观察迭部在中国三级阶梯中的位置</h2>
+          <span class="map-tips">当前视角：<strong id="scale-label">中国全域尺度</strong></span>
         </div>
-        <div class="img-compare-item">
-          <img src="images/zhongguo-2.jpg" alt="高原草甸">
-          <span>高原草甸</span>
+        <div id="china-map"></div>
+      </div>
+      <p style="font-size:14px; color:#556055; margin-top:8px;">💡 地图中展示了中国三级阶梯分界线、主要山脉（秦岭、岷山）、白龙江与洮河示意，以及迭部县位置。缩放地图可体验不同尺度。</p>
+    </section>
+
+    <!-- 2. 地势阶梯 -->
+    <section id="section-terrain" class="content-section">
+      <h2 class="section-title">二、地势阶梯：站在第一级与第二级之间</h2>
+      <div class="info-card" style="border-top-color:#8fc98f;">
+        <p>中国地势“西高东低，呈三级阶梯状分布”，第一级阶梯以青藏高原为主体，平均海拔 4000 米以上；第二级阶梯以高原和盆地为主，海拔多在 1000—2000 米。迭部恰恰站在这两级阶梯的交界地带。</p>
+        <p>有资料明确指出，迭部地处<strong class="highlight-text">“中国地势三级阶梯中第一阶梯和第二阶梯的交界地带”</strong>。全境最低处约 <span class="highlight">1500 米</span>，最高处达 <span class="highlight">4920 米</span>，同一县域内海拔跨越近 3500 米，让教材上的“阶梯过渡”变得具体可感。</p>
+        <div class="img-compare-container">
+          <div class="img-compare-item">
+            <img src="images/zhongguo-1.jpg" alt="高山峡谷地貌">
+            <span>高山峡谷</span>
+          </div>
+          <div class="img-compare-item">
+            <img src="images/zhongguo-2.jpg" alt="高原草甸">
+            <span>高原草甸</span>
+          </div>
         </div>
       </div>
-    </div>
+    </section>
 
-    <!-- 知识点2：山脉格局 -->
-    <div class="info-card">
-      <h3>2. 山脉格局：秦岭西延与岷迭山系</h3>
-      <p>人教版八年级上册“中国的地形”要求学生掌握中国主要山脉的走向与分布。迭部位于<strong class="highlight-text">“南秦岭西延岷、迭山系之间”</strong>，白龙江干流自西向东横穿全境，将群山分割为南北两部分：江北山地统称<strong>迭山</strong>，江南山地统称<strong>岷山</strong>。</p>
-      <p>岷山是教材中提到的南北走向山脉之一，而迭山则属于秦岭西延的组成部分。在地图上找到迭部，就能直观看到“东西走向的秦岭”与“南北走向的岷山”在甘肃南部交汇的具体样貌。</p>
-      
-      <div class="img-single-container">
-        <img src="images/zhongguo-3.jpg" alt="山脉交汇景观">
-        <span>秦岭西延与岷山交汇地带的山地景观（示意）</span>
+    <!-- 3. 山脉格局 -->
+    <section id="section-mountain" class="content-section">
+      <h2 class="section-title">三、山脉格局：秦岭西延与岷迭山系</h2>
+      <div class="info-card" style="border-top-color:#8fc98f;">
+        <p>人教版八年级上册“中国的地形”要求学生掌握中国主要山脉的走向与分布。迭部位于<strong class="highlight-text">“南秦岭西延岷、迭山系之间”</strong>，白龙江干流自西向东横穿全境，将群山分割为南北两部分：江北山地统称<strong>迭山</strong>，江南山地统称<strong>岷山</strong>。</p>
+        <p>岷山是教材中提到的南北走向山脉之一，而迭山则属于秦岭西延的组成部分。在地图上找到迭部，就能直观看到“东西走向的秦岭”与“南北走向的岷山”在甘肃南部交汇的具体样貌。</p>
+        <div class="img-single-container">
+          <img src="images/zhongguo-3.jpg" alt="山脉交汇景观">
+          <span>秦岭西延与岷山交汇地带的山地景观（示意）</span>
+        </div>
       </div>
-    </div>
+    </section>
 
-    <!-- 知识点3：气候特征（全宽卡片，利用网格特性跨列） -->
-    <div class="info-card" style="grid-column: 1 / -1;">
-      <h3>3. 气候特征：过渡带上的非典型气候</h3>
-      <p>迭部的气候被描述为<strong class="highlight-text">“非典型性大陆性气候”</strong>，处于“大陆气候与海洋性气候的过渡带”。具体表现为：冬无严寒、夏无酷暑，年平均气温 8—11℃，降水量 634.6 毫米，多集中在 5—9 月。</p>
-      <p>这一气候特征的形成，与迭部所处的地理位置直接相关。它既受到来自东南的季风影响（降水集中在夏季），又因深居内陆、海拔较高而带有大陆性特征。教材在讲“中国气候”时强调“海陆位置”和“地形”对气候的影响，迭部恰好是一个可以同时讨论这两个因素的案例。</p>
-      <p>更直观的气候—植被关联体现在山坡上：<strong>阳坡</strong>接受太阳辐射多、蒸发强、水分条件差，只能生长草坡和农田；<strong>阴坡</strong>气温低、蒸发弱、降水条件好，云杉林茂密生长。教材中“气候影响植被”的抽象表述，在这里变成了可以亲眼观察的坡向差异。</p>
-    </div>
-
-    <!-- 知识点4：水系分水岭 -->
-    <div class="info-card" style="grid-column: 1 / -1;">
-      <h3>4. 水系分水岭：一县跨两流域</h3>
-      <p>迭部的水系格局，直接对应教材中关于“长江与黄河分水岭”的知识点。境内河流绝大多数属于<strong>白龙江水系</strong>，白龙江是嘉陵江上游最大支流，最终汇入长江。但北部迭山主脉脊线以北的极小区域，属于<strong>洮河水系</strong>，而洮河是黄河上游支流。</p>
-      <p>这意味着迭部北部山区是<strong class="highlight-text">长江水系与黄河水系的分水岭</strong>所在。教材在讲中国河流时，通常会强调秦岭—淮河作为南北分界的重要意义。迭部的独特之处在于，它提供了一个更微观的观察窗口：在同一个县的范围内，学生可以看到两条大河的支流从同一片山系的不同坡面流出，各自奔向不同的海洋方向。</p>
-      
-      <div class="data-box">
-        <strong>一县跨两流域</strong><br>
-        白龙江（长江支流）与洮河（黄河支流）在迭部北部迭山分水，这种地理事实让“分水岭”从地图上的线条变成了可以实地理解的山水关系。
+    <!-- 4. 气候特征 -->
+    <section id="section-climate" class="content-section">
+      <h2 class="section-title">四、气候特征：过渡带上的非典型气候</h2>
+      <div class="info-card" style="border-top-color:#8fc98f;">
+        <p>迭部的气候被描述为<strong class="highlight-text">“非典型性大陆性气候”</strong>，处于“大陆气候与海洋性气候的过渡带”。具体表现为：冬无严寒、夏无酷暑，年平均气温 8—11℃，降水量 634.6 毫米，多集中在 5—9 月。</p>
+        <p>这一气候特征的形成，与迭部所处的地理位置直接相关。它既受到来自东南的季风影响（降水集中在夏季），又因深居内陆、海拔较高而带有大陆性特征。教材在讲“中国气候”时强调“海陆位置”和“地形”对气候的影响，迭部恰好是一个可以同时讨论这两个因素的案例。</p>
+        <p>更直观的气候—植被关联体现在山坡上：<strong>阳坡</strong>接受太阳辐射多、蒸发强、水分条件差，只能生长草坡和农田；<strong>阴坡</strong>气温低、蒸发弱、降水条件好，云杉林茂密生长。教材中“气候影响植被”的抽象表述，在这里变成了可以亲眼观察的坡向差异。</p>
       </div>
-    </div>
-  </div>
+    </section>
 
-  <!-- 教材链接模块 -->
-  <h2 class="section-title">三、教材链接与课标对应</h2>
-  
-  <div class="textbook-link-box">
-    <table class="textbook-table">
-      <thead>
-        <tr>
-          <th style="width: 22%;">对应教材章节</th>
-          <th style="width: 28%;">核心知识点</th>
-          <th style="width: 30%;">本页面的教学切入点（迭部案例）</th>
-          <th style="width: 20%;">核心素养</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><span class="tb-tag">八年级上册</span>第二章 中国的自然环境<br>第一节 地形和地势</td>
-          <td>我国地势三级阶梯的分布特征及主要分界线。</td>
-          <td>迭部位于第一、二级阶梯过渡带，全境海拔 1500—4920 米，可在阶梯示意图上标注迭部，观察其与分界线的关系。</td>
-          <td><span class="core-literacy">区域认知</span>：识别迭部在三级阶梯中的位置；<span class="core-literacy">综合思维</span>：理解地形对海拔、气候等要素的综合影响。</td>
-        </tr>
-        <tr>
-          <td><span class="tb-tag">八年级上册</span>第二章 中国的自然环境<br>第一节 地形和地势</td>
-          <td>我国主要山脉的走向与分布。</td>
-          <td>迭部处于秦岭西延（东西向）与岷山（南北向）交汇处，对比教材山脉分布图，找出迭部所在的山系位置。</td>
-          <td><span class="core-literacy">区域认知</span>：在地图上定位山系并判断走向；<span class="core-literacy">地理实践力</span>：通过地图观察山脉交汇关系。</td>
-        </tr>
-        <tr>
-          <td><span class="tb-tag">八年级上册</span>第二章 中国的自然环境<br>第二节 气候</td>
-          <td>气候受海陆位置、地形等因素影响；气候对植被的影响。</td>
-          <td>迭部为非典型性大陆性气候，阳坡草坡/阴坡森林的坡向差异，可用来解释“地形如何改变局部气候与植被”。</td>
-          <td><span class="core-literacy">综合思维</span>：分析海陆位置、地形与气候的相互关系；<span class="core-literacy">人地协调观</span>：理解坡向差异对植被与农业的影响。</td>
-        </tr>
-        <tr>
-          <td><span class="tb-tag">八年级上册</span>第二章 中国的自然环境<br>第三节 河流</td>
-          <td>长江与黄河的分水岭；外流河的水文特征。</td>
-          <td>北部迭山为白龙江（长江）与洮河（黄河）分水岭，在白龙江流域图上标出分水岭位置，理解“一县跨两流域”。</td>
-          <td><span class="core-literacy">区域认知</span>：认识流域归属与分水岭空间位置；<span class="core-literacy">综合思维</span>：理解水系与地形的关联；<span class="core-literacy">地理实践力</span>：读图标注分水岭。</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+    <!-- 5. 水系分水岭 -->
+    <section id="section-river" class="content-section">
+      <h2 class="section-title">五、水系分水岭：一县跨两流域</h2>
+      <div class="info-card" style="border-top-color:#8fc98f;">
+        <p>迭部的水系格局，直接对应教材中关于“长江与黄河分水岭”的知识点。境内河流绝大多数属于<strong>白龙江水系</strong>，白龙江是嘉陵江上游最大支流，最终汇入长江。但北部迭山主脉脊线以北的极小区域，属于<strong>洮河水系</strong>，而洮河是黄河上游支流。</p>
+        <p>这意味着迭部北部山区是<strong class="highlight-text">长江水系与黄河水系的分水岭</strong>所在。教材在讲中国河流时，通常会强调秦岭—淮河作为南北分界的重要意义。迭部的独特之处在于，它提供了一个更微观的观察窗口：在同一个县的范围内，学生可以看到两条大河的支流从同一片山系的不同坡面流出，各自奔向不同的海洋方向。</p>
+        <div class="data-box">
+          <strong>一县跨两流域</strong><br>
+          白龙江（长江支流）与洮河（黄河支流）在迭部北部迭山分水，这种地理事实让“分水岭”从地图上的线条变成了可以实地理解的山水关系。
+        </div>
+      </div>
+    </section>
 
-  <!-- 互动探究任务 -->
-  <h2 class="section-title">四、互动探究任务</h2>
-  
-  <div class="info-card" style="margin-bottom: 30px; border-top-color: #f0c040;">
-    <h3>任务：在中国地形图上“定位”迭部</h3>
-    <p>观察交互地图上的迭部位置，回答以下问题：迭部位于哪两级阶梯的交界处？它北侧和南侧的山脉分别属于什么走向？白龙江最终汇入哪条大河？</p>
-    <button class="task-btn" onclick="showTaskFeedback()">查看教师提示 / 提交思路</button>
-    <div class="task-feedback" id="task-feedback">
-      <strong>教师提示：</strong>引导学生在中国地形图上观察：①迭部位于第一级阶梯（青藏高原）与第二级阶梯（黄土高原/内蒙古高原）交界处；②北侧迭山属秦岭西延（东西走向），南侧岷山属南北走向；③白龙江→嘉陵江→长江，属于长江水系；北部洮河→黄河，属于黄河水系。通过地图缩放，学生可直观感受“一县跨两流域”和“阶梯过渡”的地理含义。
-    </div>
-  </div>
+    <!-- 6. 教材链接与课标 -->
+    <section id="section-textbook" class="content-section">
+      <h2 class="section-title">六、教材链接与课标对应</h2>
+      <div class="textbook-link-box">
+        <table class="textbook-table">
+          <thead>
+            <tr>
+              <th style="width: 22%;">对应教材章节</th>
+              <th style="width: 28%;">核心知识点</th>
+              <th style="width: 30%;">本页面的教学切入点（迭部案例）</th>
+              <th style="width: 20%;">核心素养</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="tb-tag">八年级上册</span>第二章 中国的自然环境<br>第一节 地形和地势</td>
+              <td>我国地势三级阶梯的分布特征及主要分界线。</td>
+              <td>迭部位于第一、二级阶梯过渡带，全境海拔 1500—4920 米，可在阶梯示意图上标注迭部，观察其与分界线的关系。</td>
+              <td><span class="core-literacy">区域认知</span>：识别迭部在三级阶梯中的位置；<span class="core-literacy">综合思维</span>：理解地形对海拔、气候等要素的综合影响。</td>
+            </tr>
+            <tr>
+              <td><span class="tb-tag">八年级上册</span>第二章 中国的自然环境<br>第一节 地形和地势</td>
+              <td>我国主要山脉的走向与分布。</td>
+              <td>迭部处于秦岭西延（东西向）与岷山（南北向）交汇处，对比教材山脉分布图，找出迭部所在的山系位置。</td>
+              <td><span class="core-literacy">区域认知</span>：在地图上定位山系并判断走向；<span class="core-literacy">地理实践力</span>：通过地图观察山脉交汇关系。</td>
+            </tr>
+            <tr>
+              <td><span class="tb-tag">八年级上册</span>第二章 中国的自然环境<br>第二节 气候</td>
+              <td>气候受海陆位置、地形等因素影响；气候对植被的影响。</td>
+              <td>迭部为非典型性大陆性气候，阳坡草坡/阴坡森林的坡向差异，可用来解释“地形如何改变局部气候与植被”。</td>
+              <td><span class="core-literacy">综合思维</span>：分析海陆位置、地形与气候的相互关系；<span class="core-literacy">人地协调观</span>：理解坡向差异对植被与农业的影响。</td>
+            </tr>
+            <tr>
+              <td><span class="tb-tag">八年级上册</span>第二章 中国的自然环境<br>第三节 河流</td>
+              <td>长江与黄河的分水岭；外流河的水文特征。</td>
+              <td>北部迭山为白龙江（长江）与洮河（黄河）分水岭，在白龙江流域图上标出分水岭位置，理解“一县跨两流域”。</td>
+              <td><span class="core-literacy">区域认知</span>：认识流域归属与分水岭空间位置；<span class="core-literacy">综合思维</span>：理解水系与地形的关联；<span class="core-literacy">地理实践力</span>：读图标注分水岭。</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
 
-</main>
+    <!-- 7. 互动探究任务 -->
+    <section id="section-task" class="content-section">
+      <h2 class="section-title">七、互动探究任务</h2>
+      <div class="info-card" style="border-top-color: #f0c040;">
+        <h3>任务：在中国地形图上“定位”迭部</h3>
+        <p>观察交互地图上的迭部位置，回答以下问题：迭部位于哪两级阶梯的交界处？它北侧和南侧的山脉分别属于什么走向？白龙江最终汇入哪条大河？</p>
+        <button class="task-btn" onclick="showTaskFeedback()">查看教师提示 / 提交思路</button>
+        <div class="task-feedback" id="task-feedback">
+          <strong>教师提示：</strong>引导学生在中国地形图上观察：①迭部位于第一级阶梯（青藏高原）与第二级阶梯（黄土高原/内蒙古高原）交界处；②北侧迭山属秦岭西延（东西走向），南侧岷山属南北走向；③白龙江→嘉陵江→长江，属于长江水系；北部洮河→黄河，属于黄河水系。通过地图缩放，学生可直观感受“一县跨两流域”和“阶梯过渡”的地理含义。
+        </div>
+      </div>
+    </section>
+
+  </div><!-- 结束 content-panel -->
+</div><!-- 结束 main-wrapper -->
 
 <footer>
   数据来源：迭部县人民政府、联合国粮农组织、甘南州统计公报 · 教学用途网站 · 底图 &copy; 高德地图
@@ -406,335 +569,304 @@
 <!-- 引入 Leaflet 地图库的 JS -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-  // ==========================================
-  // 1. 初始化地图
-  // ==========================================
-  var map = L.map('china-map', {
-    center: [35.0, 103.0],
-    zoom: 5,
-    zoomControl: true
+  // ========== 左侧导航点击切换内容 ==========
+  (function() {
+    const sidebarItems = document.querySelectorAll('.sidebar-item');
+    const sections = document.querySelectorAll('.content-section');
+
+    sidebarItems.forEach(item => {
+      item.addEventListener('click', function(e) {
+        const targetId = this.getAttribute('data-target');
+
+        // 移除所有 active 状态
+        sidebarItems.forEach(i => i.classList.remove('active'));
+        this.classList.add('active');
+
+        // 隐藏所有 section，显示目标 section
+        sections.forEach(sec => sec.classList.remove('active-section'));
+        const targetSection = document.getElementById(targetId);
+        if (targetSection) {
+          targetSection.classList.add('active-section');
+        }
+
+        // 如果地图容器在隐藏时被显示，需要让 Leaflet 重新计算尺寸
+        if (targetId === 'section-map') {
+          setTimeout(() => {
+            if (window.map && typeof window.map.invalidateSize === 'function') {
+              window.map.invalidateSize();
+            }
+          }, 100);
+        }
+      });
+    });
+  })();
+
+  // ========== 地图初始化及图层（基于原逻辑，但挂载到window便于调用） ==========
+  window.addEventListener('DOMContentLoaded', function() {
+    // 初始化地图
+    var map = L.map('china-map', {
+      center: [35.0, 103.0],
+      zoom: 5,
+      zoomControl: true
+    });
+    window.map = map; // 暴露给外部以便切换时刷新
+
+    // 高德卫星影像
+    var gaodeSatellite = L.tileLayer(
+      'https://webst0{s}.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}', {
+        subdomains: ['1', '2', '3', '4'],
+        maxZoom: 18,
+        attribution: '&copy; 高德地图'
+      }
+    );
+
+    var gaodeAnnotation = L.tileLayer(
+      'https://webst0{s}.is.autonavi.com/appmaptile?style=8&x={x}&y={y}&z={z}', {
+        subdomains: ['1', '2', '3', '4'],
+        maxZoom: 18,
+        opacity: 0.9
+      }
+    );
+
+    gaodeSatellite.addTo(map);
+    gaodeAnnotation.addTo(map);
+
+    var baseLayers = {
+      "卫星影像 + 注记": L.layerGroup([gaodeSatellite, gaodeAnnotation]),
+      "仅卫星影像": gaodeSatellite
+    };
+    L.control.layers(baseLayers, null, { position: 'topright' }).addTo(map);
+    baseLayers["卫星影像 + 注记"].addTo(map);
+
+    // 第一级与第二级阶梯分界线
+    var stepLine1 = L.polyline([
+      [36.2, 77.5], [37.5, 88.0], [38.7, 98.0], [37.0, 101.5],
+      [34.0, 103.0], [30.5, 102.0], [28.0, 100.5]
+    ], {
+      color: '#d97706', weight: 3.5, opacity: 0.85,
+      dashArray: '10, 8', lineCap: 'round'
+    }).addTo(map);
+    stepLine1.bindPopup(
+      "<b>第一级与第二级阶梯分界线</b><br>大致沿昆仑山—祁连山—横断山分布<br><span style='color:#d97706;'>⛰️ 迭部位于此线东侧的过渡带上</span>"
+    );
+
+    // 第二级与第三级阶梯分界线
+    var stepLine2 = L.polyline([
+      [52.0, 122.5], [47.0, 120.0], [43.0, 118.0], [40.0, 115.0],
+      [35.0, 110.5], [31.0, 110.0], [28.0, 110.5], [25.0, 110.5]
+    ], {
+      color: '#2563eb', weight: 3, opacity: 0.75,
+      dashArray: '8, 8', lineCap: 'round'
+    }).addTo(map);
+    stepLine2.bindPopup(
+      "<b>第二级与第三级阶梯分界线</b><br>大兴安岭—太行山—巫山—雪峰山<br><span style='color:#2563eb;'>迭部远在此线以西的第二级阶梯上</span>"
+    );
+
+    // 迭部县标记
+    var diebuMarker = L.circleMarker([34.05, 103.2], {
+      radius: 12, color: '#8a2b1d', weight: 3,
+      fillColor: '#f0c040', fillOpacity: 0.95, opacity: 1
+    }).addTo(map);
+    diebuMarker.bindPopup(
+      "<b>📍 迭部县</b><br>位于第一、二级阶梯过渡带<br>长江（白龙江）与黄河（洮河）分水岭所在<br><span style='color:#8a2b1d;'>海拔1500–4920米</span>"
+    );
+    diebuMarker.bindTooltip("迭部", {permanent: true, direction: 'top', className: 'diebu-label'});
+
+    // 秦岭
+    var qinlingLine = L.polyline([
+      [34.6, 104.0], [34.2, 106.0], [33.9, 108.5], [33.6, 111.0]
+    ], {
+      color: '#2c5f2d', weight: 3, opacity: 0.9, dashArray: '6, 4'
+    }).addTo(map);
+    qinlingLine.bindPopup("<b>秦岭（东西走向）</b><br>迭山属于南秦岭西延部分");
+
+    // 岷山
+    var minshanLine = L.polyline([
+      [35.2, 103.6], [34.0, 103.6], [32.8, 103.4], [31.5, 103.0]
+    ], {
+      color: '#8a2b1d', weight: 3, opacity: 0.9, dashArray: '6, 4'
+    }).addTo(map);
+    minshanLine.bindPopup("<b>岷山（南北走向）</b><br>江南山地统称岷山");
+
+    // 白龙江
+    var bailongLine = L.polyline([
+      [34.10, 103.10], [33.75, 103.80], [33.40, 104.50],
+      [32.90, 105.20], [32.30, 105.90], [31.80, 106.40]
+    ], {
+      color: '#4fa3e3', weight: 4, opacity: 0.95, dashArray: '10, 6'
+    }).addTo(map);
+    bailongLine.bindPopup("<b>白龙江流向</b><br>迭部 → 四川（嘉陵江支流）→ 长江");
+
+    // 洮河
+    var taoheLine = L.polyline([
+      [34.40, 103.00], [34.80, 103.40], [35.10, 103.80], [35.40, 104.20]
+    ], {
+      color: '#b85c1a', weight: 2.5, opacity: 0.8, dashArray: '4, 4'
+    }).addTo(map);
+    taoheLine.bindPopup("<b>洮河（黄河支流）示意</b><br>迭部北部迭山主脊以北属洮河水系<br>黄河水系与长江水系在此分水");
+
+    // 城市标注
+    L.marker([36.06, 103.83], {icon: L.divIcon({className: 'city-label', html: '兰州', iconSize: [40,20]})})
+      .addTo(map)
+      .bindTooltip('兰州', {permanent: true, direction: 'center', className: 'city-tooltip'});
+    L.marker([34.58, 105.72], {icon: L.divIcon({className: 'city-label', html: '天水', iconSize: [40,20]})})
+      .addTo(map)
+      .bindTooltip('天水', {permanent: true, direction: 'center', className: 'city-tooltip'});
+    L.marker([33.40, 104.00], {icon: L.divIcon({className: 'city-label', html: '九寨沟', iconSize: [50,20]})})
+      .addTo(map)
+      .bindTooltip('九寨沟', {permanent: true, direction: 'center', className: 'city-tooltip'});
+
+    // 高原与阶梯文字标注
+    L.marker([33.5, 92.0], {
+      icon: L.divIcon({
+        className: 'plateau-label',
+        html: '<div style="font-size:24px; font-weight:bold; color:#ffffff; text-shadow:1px 1px 4px #000,0 0 8px #000; white-space:nowrap;">青藏高原</div>',
+        iconSize: [140, 30],
+        iconAnchor: [70, 15]
+      }),
+      interactive: false
+    }).addTo(map);
+
+    L.marker([36.5, 108.5], {
+      icon: L.divIcon({
+        className: 'plateau-label',
+        html: '<div style="font-size:24px; font-weight:bold; color:#ffffff; text-shadow:1px 1px 4px #000,0 0 8px #000; white-space:nowrap;">黄土高原</div>',
+        iconSize: [140, 30],
+        iconAnchor: [70, 15]
+      }),
+      interactive: false
+    }).addTo(map);
+
+    L.marker([31.5, 90.0], {
+      icon: L.divIcon({
+        className: 'step-label',
+        html: '<div style="font-size:21px; font-weight:bold; color:#f0c040; text-shadow:1px 1px 4px #000,0 0 8px #000; white-space:nowrap; letter-spacing:3px;">第一级阶梯</div>',
+        iconSize: [150, 30],
+        iconAnchor: [75, 15]
+      }),
+      interactive: false
+    }).addTo(map);
+
+    L.marker([38.0, 108.0], {
+      icon: L.divIcon({
+        className: 'step-label',
+        html: '<div style="font-size:21px; font-weight:bold; color:#f0c040; text-shadow:1px 1px 4px #000,0 0 8px #000; white-space:nowrap; letter-spacing:3px;">第二级阶梯</div>',
+        iconSize: [150, 30],
+        iconAnchor: [75, 15]
+      }),
+      interactive: false
+    }).addTo(map);
+
+    L.marker([33.0, 118.0], {
+      icon: L.divIcon({
+        className: 'step-label',
+        html: '<div style="font-size:21px; font-weight:bold; color:#f0c040; text-shadow:1px 1px 4px #000,0 0 8px #000; white-space:nowrap; letter-spacing:3px;">第三级阶梯</div>',
+        iconSize: [150, 30],
+        iconAnchor: [75, 15]
+      }),
+      interactive: false
+    }).addTo(map);
+
+    // 缩放级别文字提示
+    map.on('zoomend', function() {
+      var currentZoom = map.getZoom();
+      var scaleLabel = document.getElementById('scale-label');
+      if (!scaleLabel) return;
+
+      if (currentZoom < 6) {
+        scaleLabel.innerText = "中国全域宏观视角";
+        scaleLabel.style.color = "#2c5f2d";
+      } else if (currentZoom >= 6 && currentZoom < 9) {
+        scaleLabel.innerText = "甘南/白龙江流域视角";
+        scaleLabel.style.color = "#4fa3e3";
+      } else {
+        scaleLabel.innerText = "迭部县微观视角";
+        scaleLabel.style.color = "#8a2b1d";
+      }
+    });
+    map.fire('zoomend');
+
+    // 图例控件
+    var legend = L.control({position: 'bottomright'});
+    legend.onAdd = function (map) {
+      var div = L.DomUtil.create('div', 'info legend');
+      div.style.backgroundColor = 'rgba(255,255,255,0.92)';
+      div.style.padding = '10px 14px';
+      div.style.borderRadius = '8px';
+      div.style.boxShadow = '0 1px 6px rgba(0,0,0,0.25)';
+      div.style.fontSize = '12px';
+      div.style.lineHeight = '1.7';
+      div.innerHTML = `
+        <div style="font-weight:600; margin-bottom:4px;">🗺️ 图例</div>
+        <div><span style="display:inline-block;width:22px;height:3px;background:#d97706;margin-right:6px;"></span> 第一/二级阶梯分界</div>
+        <div><span style="display:inline-block;width:22px;height:3px;background:#2563eb;margin-right:6px;"></span> 第二/三级阶梯分界</div>
+        <div><span style="display:inline-block;width:22px;height:3px;background:#2c5f2d;margin-right:6px;"></span> 秦岭（东西向）</div>
+        <div><span style="display:inline-block;width:22px;height:3px;background:#8a2b1d;margin-right:6px;"></span> 岷山（南北向）</div>
+        <div><span style="display:inline-block;width:22px;height:3px;background:#4fa3e3;margin-right:6px;"></span> 白龙江（长江水系）</div>
+        <div><span style="display:inline-block;width:22px;height:3px;background:#b85c1a;margin-right:6px;"></span> 洮河（黄河水系）</div>
+        <div><span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:#f0c040;border:2px solid #8a2b1d;margin-right:6px;vertical-align:middle;"></span> 迭部县</div>
+      `;
+      return div;
+    };
+    legend.addTo(map);
+
+    // 自定义标签样式
+    var style = document.createElement('style');
+    style.innerHTML = `
+      .city-tooltip {
+        background: rgba(255,255,255,0.85) !important;
+        border: 1px solid #ccc !important;
+        border-radius: 4px !important;
+        font-size: 11px !important;
+        padding: 2px 6px !important;
+        box-shadow: none !important;
+        color: #2c3e50 !important;
+        font-weight: 500;
+      }
+      .diebu-label {
+        background: #8a2b1d !important;
+        color: #fff !important;
+        border: none !important;
+        font-weight: 600 !important;
+        font-size: 12px !important;
+        padding: 2px 8px !important;
+        border-radius: 12px !important;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.3) !important;
+      }
+      .diebu-label::before {
+        display: none;
+      }
+      .leaflet-tooltip-top:before {
+        border-top-color: #8a2b1d !important;
+      }
+      .city-label {
+        background: transparent !important;
+        border: none !important;
+      }
+      .plateau-label, .step-label {
+        background: transparent !important;
+        border: none !important;
+      }
+    `;
+    document.head.appendChild(style);
+
+    // 首次加载时如果地图section可见，无需操作；但以防万一，延迟刷新一次
+    setTimeout(() => {
+      if (map) map.invalidateSize();
+    }, 200);
   });
 
-  // ==========================================
-  // 2. 高德卫星影像底图（含注记叠加层）
-  // ==========================================
-  // 卫星影像
-  var gaodeSatellite = L.tileLayer(
-    'https://webst0{s}.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}', {
-      subdomains: ['1', '2', '3', '4'],
-      maxZoom: 18,
-      attribution: '&copy; 高德地图'
-    }
-  );
-
-  // 路网与注记（透明叠加层）
-  var gaodeAnnotation = L.tileLayer(
-    'https://webst0{s}.is.autonavi.com/appmaptile?style=8&x={x}&y={y}&z={z}', {
-      subdomains: ['1', '2', '3', '4'],
-      maxZoom: 18,
-      opacity: 0.9
-    }
-  );
-
-  // 默认同时显示卫星影像与注记
-  gaodeSatellite.addTo(map);
-  gaodeAnnotation.addTo(map);
-
-  // 图层切换控件（卫星影像 / 卫星+注记）
-  var baseLayers = {
-    "卫星影像 + 注记": L.layerGroup([gaodeSatellite, gaodeAnnotation]),
-    "仅卫星影像": gaodeSatellite
-  };
-  L.control.layers(baseLayers, null, { position: 'topright' }).addTo(map);
-  baseLayers["卫星影像 + 注记"].addTo(map);
-
-  // ==========================================
-  // 3. 中国三级阶梯示意分界线（虚线，粗线，可点击）
-  // ==========================================
-  // 第一级与第二级阶梯分界线：昆仑山—祁连山—横断山（示意）
-  var stepLine1 = L.polyline([
-    [36.2, 77.5],
-    [37.5, 88.0],
-    [38.7, 98.0],
-    [37.0, 101.5],
-    [34.0, 103.0],
-    [30.5, 102.0],
-    [28.0, 100.5]
-  ], {
-    color: '#d97706',
-    weight: 3.5,
-    opacity: 0.85,
-    dashArray: '10, 8',
-    lineCap: 'round'
-  }).addTo(map);
-  stepLine1.bindPopup(
-    "<b>第一级与第二级阶梯分界线</b><br>大致沿昆仑山—祁连山—横断山分布<br><span style='color:#d97706;'>⛰️ 迭部位于此线东侧的过渡带上</span>"
-  );
-
-  // 第二级与第三级阶梯分界线：大兴安岭—太行山—巫山—雪峰山（示意）
-  var stepLine2 = L.polyline([
-    [52.0, 122.5],
-    [47.0, 120.0],
-    [43.0, 118.0],
-    [40.0, 115.0],
-    [35.0, 110.5],
-    [31.0, 110.0],
-    [28.0, 110.5],
-    [25.0, 110.5]
-  ], {
-    color: '#2563eb',
-    weight: 3,
-    opacity: 0.75,
-    dashArray: '8, 8',
-    lineCap: 'round'
-  }).addTo(map);
-  stepLine2.bindPopup(
-    "<b>第二级与第三级阶梯分界线</b><br>大兴安岭—太行山—巫山—雪峰山<br><span style='color:#2563eb;'>迭部远在此线以西的第二级阶梯上</span>"
-  );
-
-  // ==========================================
-  // 4. 迭部标记及主要山脉示意
-  // ==========================================
-  // 迭部县标记
-  var diebuMarker = L.circleMarker([34.05, 103.2], {
-    radius: 12,
-    color: '#8a2b1d',
-    weight: 3,
-    fillColor: '#f0c040',
-    fillOpacity: 0.95,
-    opacity: 1
-  }).addTo(map);
-  diebuMarker.bindPopup(
-    "<b>📍 迭部县</b><br>位于第一、二级阶梯过渡带<br>长江（白龙江）与黄河（洮河）分水岭所在<br><span style='color:#8a2b1d;'>海拔1500–4920米</span>"
-  );
-  diebuMarker.bindTooltip("迭部", {permanent: true, direction: 'top', className: 'diebu-label'});
-
-  // 秦岭（东西走向，示意）
-  var qinlingLine = L.polyline([
-    [34.6, 104.0],
-    [34.2, 106.0],
-    [33.9, 108.5],
-    [33.6, 111.0]
-  ], {
-    color: '#2c5f2d',
-    weight: 3,
-    opacity: 0.9,
-    dashArray: '6, 4'
-  }).addTo(map);
-  qinlingLine.bindPopup("<b>秦岭（东西走向）</b><br>迭山属于南秦岭西延部分");
-
-  // 岷山（南北走向，示意）
-  var minshanLine = L.polyline([
-    [35.2, 103.6],
-    [34.0, 103.6],
-    [32.8, 103.4],
-    [31.5, 103.0]
-  ], {
-    color: '#8a2b1d',
-    weight: 3,
-    opacity: 0.9,
-    dashArray: '6, 4'
-  }).addTo(map);
-  minshanLine.bindPopup("<b>岷山（南北走向）</b><br>江南山地统称岷山");
-
-  // 白龙江流向（自迭部向东南汇入嘉陵江）
-  var bailongLine = L.polyline([
-    [34.10, 103.10],
-    [33.75, 103.80],
-    [33.40, 104.50],
-    [32.90, 105.20],
-    [32.30, 105.90],
-    [31.80, 106.40]
-  ], {
-    color: '#4fa3e3',
-    weight: 4,
-    opacity: 0.95,
-    dashArray: '10, 6'
-  }).addTo(map);
-  bailongLine.bindPopup("<b>白龙江流向</b><br>迭部 → 四川（嘉陵江支流）→ 长江");
-
-  // 洮河示意（黄河支流）
-  var taoheLine = L.polyline([
-    [34.40, 103.00],
-    [34.80, 103.40],
-    [35.10, 103.80],
-    [35.40, 104.20]
-  ], {
-    color: '#b85c1a',
-    weight: 2.5,
-    opacity: 0.8,
-    dashArray: '4, 4'
-  }).addTo(map);
-  taoheLine.bindPopup("<b>洮河（黄河支流）示意</b><br>迭部北部迭山主脊以北属洮河水系<br>黄河水系与长江水系在此分水");
-
-  // 关键城市/地点文字标签（增强地理参照）
-  L.marker([36.06, 103.83], {icon: L.divIcon({className: 'city-label', html: '兰州', iconSize: [40,20]})})
-    .addTo(map)
-    .bindTooltip('兰州', {permanent: true, direction: 'center', className: 'city-tooltip'});
-  L.marker([34.58, 105.72], {icon: L.divIcon({className: 'city-label', html: '天水', iconSize: [40,20]})})
-    .addTo(map)
-    .bindTooltip('天水', {permanent: true, direction: 'center', className: 'city-tooltip'});
-  L.marker([33.40, 104.00], {icon: L.divIcon({className: 'city-label', html: '九寨沟', iconSize: [50,20]})})
-    .addTo(map)
-    .bindTooltip('九寨沟', {permanent: true, direction: 'center', className: 'city-tooltip'});
-
-  // ==========================================
-  // 4.1 高原与阶梯文字标注（字号放大3级；青藏高原东移）
-  // ==========================================
-  // 青藏高原（位置东移至 [33.5, 92.0]，字号 15px → 24px）
-  L.marker([33.5, 92.0], {
-    icon: L.divIcon({
-      className: 'plateau-label',
-      html: '<div style="font-size:24px; font-weight:bold; color:#ffffff; text-shadow:1px 1px 4px #000,0 0 8px #000; white-space:nowrap;">青藏高原</div>',
-      iconSize: [140, 30],
-      iconAnchor: [70, 15]
-    }),
-    interactive: false
-  }).addTo(map);
-
-  // 黄土高原（字号 15px → 24px）
-  L.marker([36.5, 108.5], {
-    icon: L.divIcon({
-      className: 'plateau-label',
-      html: '<div style="font-size:24px; font-weight:bold; color:#ffffff; text-shadow:1px 1px 4px #000,0 0 8px #000; white-space:nowrap;">黄土高原</div>',
-      iconSize: [140, 30],
-      iconAnchor: [70, 15]
-    }),
-    interactive: false
-  }).addTo(map);
-
-  // 第一级阶梯（字号 14px → 21px）
-  L.marker([31.5, 90.0], {
-    icon: L.divIcon({
-      className: 'step-label',
-      html: '<div style="font-size:21px; font-weight:bold; color:#f0c040; text-shadow:1px 1px 4px #000,0 0 8px #000; white-space:nowrap; letter-spacing:3px;">第一级阶梯</div>',
-      iconSize: [150, 30],
-      iconAnchor: [75, 15]
-    }),
-    interactive: false
-  }).addTo(map);
-
-  // 第二级阶梯（字号 14px → 21px）
-  L.marker([38.0, 108.0], {
-    icon: L.divIcon({
-      className: 'step-label',
-      html: '<div style="font-size:21px; font-weight:bold; color:#f0c040; text-shadow:1px 1px 4px #000,0 0 8px #000; white-space:nowrap; letter-spacing:3px;">第二级阶梯</div>',
-      iconSize: [150, 30],
-      iconAnchor: [75, 15]
-    }),
-    interactive: false
-  }).addTo(map);
-
-  // 第三级阶梯（字号 14px → 21px）
-  L.marker([33.0, 118.0], {
-    icon: L.divIcon({
-      className: 'step-label',
-      html: '<div style="font-size:21px; font-weight:bold; color:#f0c040; text-shadow:1px 1px 4px #000,0 0 8px #000; white-space:nowrap; letter-spacing:3px;">第三级阶梯</div>',
-      iconSize: [150, 30],
-      iconAnchor: [75, 15]
-    }),
-    interactive: false
-  }).addTo(map);
-
-  // ==========================================
-  // 5. 缩放级别切换文字提示
-  // ==========================================
-  map.on('zoomend', function() {
-    var currentZoom = map.getZoom();
-    var scaleLabel = document.getElementById('scale-label');
-
-    if (currentZoom < 6) {
-      scaleLabel.innerText = "中国全域宏观视角";
-      scaleLabel.style.color = "#2c5f2d";
-    } else if (currentZoom >= 6 && currentZoom < 9) {
-      scaleLabel.innerText = "甘南/白龙江流域视角";
-      scaleLabel.style.color = "#4fa3e3";
-    } else {
-      scaleLabel.innerText = "迭部县微观视角";
-      scaleLabel.style.color = "#8a2b1d";
-    }
-  });
-  map.fire('zoomend');
-
-  // ==========================================
-  // 6. 互动任务按钮逻辑
-  // ==========================================
+  // 互动任务按钮逻辑
   function showTaskFeedback() {
     var feedbackDiv = document.getElementById('task-feedback');
-    if (feedbackDiv.style.display === 'block') {
-      feedbackDiv.style.display = 'none';
-    } else {
-      feedbackDiv.style.display = 'block';
+    if (feedbackDiv) {
+      if (feedbackDiv.style.display === 'block') {
+        feedbackDiv.style.display = 'none';
+      } else {
+        feedbackDiv.style.display = 'block';
+      }
     }
   }
-
-  // ==========================================
-  // 7. 图例控件
-  // ==========================================
-  var legend = L.control({position: 'bottomright'});
-  legend.onAdd = function (map) {
-    var div = L.DomUtil.create('div', 'info legend');
-    div.style.backgroundColor = 'rgba(255,255,255,0.92)';
-    div.style.padding = '10px 14px';
-    div.style.borderRadius = '8px';
-    div.style.boxShadow = '0 1px 6px rgba(0,0,0,0.25)';
-    div.style.fontSize = '12px';
-    div.style.lineHeight = '1.7';
-    div.innerHTML = `
-      <div style="font-weight:600; margin-bottom:4px;">🗺️ 图例</div>
-      <div><span style="display:inline-block;width:22px;height:3px;background:#d97706;margin-right:6px;"></span> 第一/二级阶梯分界</div>
-      <div><span style="display:inline-block;width:22px;height:3px;background:#2563eb;margin-right:6px;"></span> 第二/三级阶梯分界</div>
-      <div><span style="display:inline-block;width:22px;height:3px;background:#2c5f2d;margin-right:6px;"></span> 秦岭（东西向）</div>
-      <div><span style="display:inline-block;width:22px;height:3px;background:#8a2b1d;margin-right:6px;"></span> 岷山（南北向）</div>
-      <div><span style="display:inline-block;width:22px;height:3px;background:#4fa3e3;margin-right:6px;"></span> 白龙江（长江水系）</div>
-      <div><span style="display:inline-block;width:22px;height:3px;background:#b85c1a;margin-right:6px;"></span> 洮河（黄河水系）</div>
-      <div><span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:#f0c040;border:2px solid #8a2b1d;margin-right:6px;vertical-align:middle;"></span> 迭部县</div>
-    `;
-    return div;
-  };
-  legend.addTo(map);
-
-  // ==========================================
-  // 8. 自定义标签样式
-  // ==========================================
-  var style = document.createElement('style');
-  style.innerHTML = `
-    .city-tooltip {
-      background: rgba(255,255,255,0.85) !important;
-      border: 1px solid #ccc !important;
-      border-radius: 4px !important;
-      font-size: 11px !important;
-      padding: 2px 6px !important;
-      box-shadow: none !important;
-      color: #2c3e50 !important;
-      font-weight: 500;
-    }
-    .diebu-label {
-      background: #8a2b1d !important;
-      color: #fff !important;
-      border: none !important;
-      font-weight: 600 !important;
-      font-size: 12px !important;
-      padding: 2px 8px !important;
-      border-radius: 12px !important;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.3) !important;
-    }
-    .diebu-label::before {
-      display: none;
-    }
-    .leaflet-tooltip-top:before {
-      border-top-color: #8a2b1d !important;
-    }
-    .city-label {
-      background: transparent !important;
-      border: none !important;
-    }
-    .plateau-label, .step-label {
-      background: transparent !important;
-      border: none !important;
-    }
-  `;
-  document.head.appendChild(style);
 </script>
 </body>
 </html>
