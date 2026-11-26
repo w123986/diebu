@@ -241,7 +241,7 @@
   }
   .img-compare-item img {
     width: 100%;
-    height: 160px; /* 内容2对比图高度调整：110px → 160px */
+    height: 180px;    /* 内容2照片高度调整为180px */
     object-fit: cover;
     border-radius: 6px;
     background: #eef3ee;
@@ -258,7 +258,7 @@
   }
   .img-single-container img {
     width: 100%;
-    height: 200px; /* 内容3单图高度调整：140px → 200px */
+    height: 240px;    /* 内容3照片高度调整为240px */
     object-fit: cover;
     border-radius: 6px;
     background: #eef3ee;
@@ -391,14 +391,14 @@
     .info-grid { grid-template-columns: 1fr; }
     #china-map { height: 300px; }
     .textbook-table th, .textbook-table td { padding: 8px; font-size: 12px; }
-    .img-compare-item img { height: 130px; } /* 移动端适当缩小，仍高于原值 */
-    .img-single-container img { height: 160px; }
+    .img-compare-item img { height: 140px; }   /* 小屏时也适当调整 */
+    .img-single-container img { height: 180px; }
   }
   @media (max-width: 500px) {
     .sidebar-item { font-size: 13px; padding: 8px 10px; }
     .section-title { font-size: 19px; }
-    .img-compare-item img { height: 110px; }
-    .img-single-container img { height: 140px; }
+    .img-compare-item img { height: 120px; }
+    .img-single-container img { height: 150px; }
   }
 </style>
 </head>
