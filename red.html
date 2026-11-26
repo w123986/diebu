@@ -49,12 +49,109 @@
   .top-nav a:hover { color: #fff; border-bottom-color: #f0c040; }
   .top-nav a.active { color: #fff; border-bottom-color: #f0c040; font-weight: 600; }
 
-  .content-container {
-    max-width: 1100px;
+  /* ===== 左侧导航 + 右侧内容 布局 ===== */
+  .page-layout {
+    display: flex;
+    max-width: 1200px;
     margin: 32px auto;
     padding: 0 20px;
+    gap: 28px;
+    align-items: flex-start;
   }
 
+  .side-nav {
+    flex: 0 0 240px;
+    width: 240px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,.08);
+    padding: 16px 0;
+    position: sticky;
+    top: 72px;
+    align-self: flex-start;
+    max-height: calc(100vh - 100px);
+    overflow-y: auto;
+  }
+
+  .side-nav .side-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #8a2b1d;
+    padding: 4px 20px 12px;
+    border-bottom: 2px solid #f0e0d8;
+    margin-bottom: 8px;
+    letter-spacing: .5px;
+  }
+
+  .side-nav button {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
+    border-left: 4px solid transparent;
+    padding: 12px 20px;
+    font-size: 14.5px;
+    color: #8a2b1d;
+    cursor: pointer;
+    font-family: inherit;
+    line-height: 1.5;
+    transition: background .15s, border-color .15s, color .15s;
+    border-radius: 0 6px 6px 0;
+  }
+
+  .side-nav button:hover {
+    background: #fdf0eb;
+    color: #6e2218;
+  }
+
+  .side-nav button.active {
+    background: #fce8e0;
+    border-left-color: #f0c040;
+    font-weight: 700;
+    color: #6e2218;
+  }
+
+  .content-area {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+
+  .content-panel {
+    display: none;
+    animation: fadeUp .25s ease;
+  }
+  .content-panel.active {
+    display: block;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .panel-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,.08);
+    overflow: hidden;
+    margin-bottom: 24px;
+  }
+
+  .panel-card > .panel-header {
+    padding: 20px 28px;
+    font-size: 19px;
+    color: #8a2b1d;
+    font-weight: 700;
+    border-bottom: 2px solid #f0e0d8;
+    background: #fff;
+  }
+
+  .panel-body {
+    padding: 20px 28px 24px;
+  }
+
+  /* 原有样式保持不变 */
   .section-title {
     font-size: 22px;
     color: #8a2b1d;
@@ -282,12 +379,60 @@
     display: none;
   }
 
+  @media (max-width: 900px) {
+    .page-layout {
+      flex-direction: column;
+      padding: 0 16px;
+      margin-top: 20px;
+      gap: 16px;
+    }
+    .side-nav {
+      position: static;
+      width: 100%;
+      flex: 0 0 auto;
+      max-height: none;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      padding: 10px;
+      border-radius: 10px;
+    }
+    .side-nav .side-title {
+      width: 100%;
+      padding: 2px 8px 8px;
+      border-bottom: none;
+      margin-bottom: 0;
+    }
+    .side-nav button {
+      width: auto;
+      border-left: none;
+      border-bottom: 3px solid transparent;
+      border-radius: 6px;
+      padding: 8px 14px;
+      font-size: 13.5px;
+    }
+    .side-nav button.active {
+      border-left: none;
+      border-bottom-color: #f0c040;
+      background: #fce8e0;
+    }
+  }
+
   @media (max-width: 760px) {
     .info-grid { grid-template-columns: 1fr; }
     #red-map { height: 320px; }
     .textbook-table th, .textbook-table td { padding: 8px; font-size: 13px; }
     .video-link-card { flex-direction: column; text-align: center; }
     .red-label-tooltip { font-size: 11px; padding: 2px 6px; }
+    .panel-body { padding: 16px; }
+    .panel-card > .panel-header { padding: 16px; font-size: 17px; }
+  }
+
+  @media (max-width: 480px) {
+    header h1 { font-size: 20px; }
+    .top-nav a { padding: 10px 9px; font-size: 13px; }
+    .page-layout { padding: 0 10px; }
+    .side-nav button { font-size: 12.5px; padding: 7px 12px; }
   }
 </style>
 </head>
@@ -308,109 +453,160 @@
   <a href="message.html">互动留言</a>
 </nav>
 
-<main class="content-container">
+<!-- ===== 左侧导航 + 右侧内容 布局 ===== -->
+<div class="page-layout">
 
-  <h2 class="section-title">一、长征路线与迭部境内的地理抉择</h2>
+  <aside class="side-nav" aria-label="页面内容导航">
+    <div class="side-title">📌 内容导航</div>
+    <button class="active" data-target="panel-1">一、长征路线与迭部境内的地理抉择</button>
+    <button data-target="panel-2">二、延伸观看：央视新闻专题报道</button>
+    <button data-target="panel-3">三、核心知识点解析</button>
+    <button data-target="panel-4">四、教材链接与课标对应</button>
+    <button data-target="panel-5">五、延伸学习：长征精神的时代内涵</button>
+    <button data-target="panel-6">六、互动探究任务</button>
+  </aside>
 
-  <div class="map-container">
-    <div class="map-header">
-      <h2>📍 红色虚线为红军长征路线，黄色高亮区域为迭部县行政边界（高德卫星影像底图）</h2>
-      <span class="map-tips">点击迭部县境内的标记，查看俄界、茨日那、腊子口的地理解读</span>
-    </div>
-    <div id="red-map"></div>
-  </div>
+  <div class="content-area">
 
-  <h2 class="section-title">二、延伸观看：央视新闻专题报道</h2>
-  
-  <a class="video-link-card" href="https://content-static.cctvnews.cctv.com/snow-book/index.html?item_id=1747943030701613398" target="_blank" rel="noopener noreferrer">
-    <div class="video-icon">🎬</div>
-    <div class="video-info">
-      <h4>视频丨红色文化+生态资源 甘肃迭部绘就藏乡新画卷</h4>
-      <p>央视新闻（2026-10-05）· 内容包含俄界会议旧址、茨日那村红军借条故事、腊子口战役及迭部全域旅游最新数据。</p>
-      <span class="video-link-btn">点击前往央视网观看 →</span>
-    </div>
-  </a>
-
-  <h2 class="section-title">三、核心知识点解析</h2>
-
-  <div class="info-grid">
-    <div class="info-card">
-      <h3>1. 俄界会议：通道地理中的“定向”</h3>
-      <p>1935年9月12日，中共中央在迭部达拉乡高吉村（藏语“高吉”音译为“俄界”）召开政治局扩大会议，确定继续北上抗日的路线。从地理视角看，迭部地处甘川交界、白龙江峡谷之中，是红军走出草地后进入甘肃的第一站，也是选择“向北”还是“向南”的关键决策点。</p>
-      <p>俄界会议旧址所在的藏式民居至今保存原貌，现为全国重点文物保护单位。会议后红军改编为陕甘支队，为后续攻克腊子口、进入陕甘奠定了基础。</p>
-      <div class="img-single-container">
-        <img src="images/red-1.jpg" alt="俄界会议旧址" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'300\' height=\'150\' viewBox=\'0 0 300 150\'%3E%3Crect width=\'300\' height=\'150\' fill=\'%23f0e8e0\'/%3E%3Ctext x=\'50%\' y=\'50%\' font-size=\'14\' fill=\'%238a6a60\' text-anchor=\'middle\' dy=\'.3em\'%3E俄界会议旧址（图片示意）%3C/text%3E%3C/svg%3E'">
-        <span>俄界会议旧址（迭部县达拉乡高吉村）</span>
+    <!-- 面板1：长征路线与迭部境内的地理抉择 -->
+    <div class="content-panel active" id="panel-1">
+      <div class="panel-card">
+        <div class="panel-header">一、长征路线与迭部境内的地理抉择</div>
+        <div class="panel-body">
+          <div class="map-container">
+            <div class="map-header">
+              <h2>📍 红色虚线为红军长征路线，黄色高亮区域为迭部县行政边界（高德卫星影像底图）</h2>
+              <span class="map-tips">点击迭部县境内的标记，查看俄界、茨日那、腊子口的地理解读</span>
+            </div>
+            <div id="red-map"></div>
+          </div>
+        </div>
       </div>
     </div>
 
-    <div class="info-card">
-      <h3>2. 腊子口：地形如何决定战术</h3>
-      <p>腊子口最窄处不足8米，两侧是100多米高的陡峭石崖，腊子河穿峡而过，素有“天险”之称。国民党军凭险筑堡，以机枪封锁隘口和独木桥。红军正面强攻多次受阻后，发现敌人碉堡没有顶盖、崖顶未设防，于是派苗族小战士“云贵川”攀上绝壁，迂回至敌后投掷手榴弹，前后夹击攻克天险。</p>
-      <p>从地理教学角度看，这是一个典型的<strong>“地形制约军事行动”</strong>案例：峡谷的狭窄性限制了兵力展开，而崖壁的“可攀爬性”（采药小径）又成为破局关键。</p>
-      <div class="img-single-container">
-        <img src="images/red-2.jpg" alt="腊子口峡谷" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'300\' height=\'150\' viewBox=\'0 0 300 150\'%3E%3Crect width=\'300\' height=\'150\' fill=\'%23f0e8e0\'/%3E%3Ctext x=\'50%\' y=\'50%\' font-size=\'14\' fill=\'%238a6a60\' text-anchor=\'middle\' dy=\'.3em\'%3E腊子口峡谷（图片示意）%3C/text%3E%3C/svg%3E'">
-        <span>腊子口峡谷地貌（两侧绝壁，中间隘口）</span>
+    <!-- 面板2：延伸观看 -->
+    <div class="content-panel" id="panel-2">
+      <div class="panel-card">
+        <div class="panel-header">二、延伸观看：央视新闻专题报道</div>
+        <div class="panel-body">
+          <a class="video-link-card" href="https://content-static.cctvnews.cctv.com/snow-book/index.html?item_id=1747943030701613398" target="_blank" rel="noopener noreferrer">
+            <div class="video-icon">🎬</div>
+            <div class="video-info">
+              <h4>视频丨红色文化+生态资源 甘肃迭部绘就藏乡新画卷</h4>
+              <p>央视新闻（2026-10-05）· 内容包含俄界会议旧址、茨日那村红军借条故事、腊子口战役及迭部全域旅游最新数据。</p>
+              <span class="video-link-btn">点击前往央视网观看 →</span>
+            </div>
+          </a>
+        </div>
       </div>
     </div>
-  </div>
 
-  <h2 class="section-title">四、教材链接与课标对应</h2>
+    <!-- 面板3：核心知识点解析 -->
+    <div class="content-panel" id="panel-3">
+      <div class="panel-card">
+        <div class="panel-header">三、核心知识点解析</div>
+        <div class="panel-body">
+          <div class="info-grid">
+            <div class="info-card">
+              <h3>1. 俄界会议：通道地理中的“定向”</h3>
+              <p>1935年9月12日，中共中央在迭部达拉乡高吉村（藏语“高吉”音译为“俄界”）召开政治局扩大会议，确定继续北上抗日的路线。从地理视角看，迭部地处甘川交界、白龙江峡谷之中，是红军走出草地后进入甘肃的第一站，也是选择“向北”还是“向南”的关键决策点。</p>
+              <p>俄界会议旧址所在的藏式民居至今保存原貌，现为全国重点文物保护单位。会议后红军改编为陕甘支队，为后续攻克腊子口、进入陕甘奠定了基础。</p>
+              <div class="img-single-container">
+                <img src="images/ejie_meeting.jpg" alt="俄界会议旧址" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'300\' height=\'150\' viewBox=\'0 0 300 150\'%3E%3Crect width=\'300\' height=\'150\' fill=\'%23f0e8e0\'/%3E%3Ctext x=\'50%\' y=\'50%\' font-size=\'14\' fill=\'%238a6a60\' text-anchor=\'middle\' dy=\'.3em\'%3E俄界会议旧址（图片示意）%3C/text%3E%3C/svg%3E'">
+                <span>俄界会议旧址（迭部县达拉乡高吉村）</span>
+              </div>
+            </div>
 
-  <div class="textbook-link-box">
-    <table class="textbook-table">
-      <thead>
-        <tr>
-          <th style="width: 18%;">对应教材/课标</th>
-          <th style="width: 26%;">核心知识点</th>
-          <th style="width: 30%;">本页面的教学切入点（迭部案例）</th>
-          <th style="width: 26%;">核心素养</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><span class="tb-tag">八年级上册</span>第二章 中国的自然环境<br>第一节 地形和地势</td>
-          <td>我国地形类型多样，山区面积广大；地形对交通、军事、聚落的影响。</td>
-          <td>以腊子口峡谷为例，分析“一夫当关，万夫莫开”的地形条件如何限制军事行动，以及红军如何利用崖壁“可攀爬性”破局。</td>
-          <td>
-            <span class="core-literacy">区域认知</span>：认识腊子口峡谷在迭部地形中的位置与形态；<br>
-            <span class="core-literacy">综合思维</span>：分析地形对军事行动的制约与破局可能；<br>
-            <span class="core-literacy">地理实践力</span>：通过地图与实景图判读峡谷地形特征。
-          </td>
-        </tr>
-        <tr>
-          <td><span class="tb-tag">乡土教育</span>红色文化研学</td>
-          <td>长征精神的内涵；革命遗址的当代价值；红色旅游与乡村振兴。</td>
-          <td>俄界会议旧址、腊子口战役纪念馆均为免费开放的爱国主义教育基地，高吉村已发展为全国乡村旅游重点村。央视报道中提到“2024年起村集体年均收入突破20万元”“旺藏镇苹果种植3600亩”等，是红色文旅带动乡村振兴的鲜活案例。</td>
-          <td>
-            <span class="core-literacy">人地协调观</span>：理解红色文旅与乡村生态、经济的协调发展；<br>
-            <span class="core-literacy">综合思维</span>：分析红色资源—旅游—乡村振兴的关联；<br>
-            <span class="core-literacy">区域认知</span>：认识高吉村、旺藏镇等迭部乡村的空间分布与特色。
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <h2 class="section-title">五、延伸学习：长征精神的时代内涵</h2>
-  <div style="text-align: center; margin-bottom: 30px;">
-    <a href="red-spirit.html" class="enter-subpage-btn">
-      ➡️ 点击进入：长征精神与今日迭部
-    </a>
-  </div>
-
-  <h2 class="section-title">六、互动探究任务</h2>
-
-  <div class="info-card" style="border-top-color: #f0c040;">
-    <h3>任务：如果你是红军指挥员</h3>
-    <p>观察地图上腊子口的位置和周边地形。红军从俄界出发向北，必须经过腊子口。如果你是指挥员，面对“正面强攻受阻”的局面，你会从地图上的哪个方向寻找突破口？</p>
-    <button class="task-btn" onclick="showTaskFeedback()">查看地理提示</button>
-    <div class="task-feedback" id="task-feedback">
-      <strong>地理提示：</strong>观察腊子口两侧的等高线（或崖壁符号）。正面隘口狭窄，兵力无法展开；但两侧崖壁并非完全垂直，当地采药人踩出的小径可以攀爬。红军的突破口不在“正面更猛的火力”，而在<strong>“敌人认为不可能的方向”</strong>——从崖顶迂回，向下攻击没有顶盖的碉堡。这就是地形阅读能力在实战中的价值。
+            <div class="info-card">
+              <h3>2. 腊子口：地形如何决定战术</h3>
+              <p>腊子口最窄处不足8米，两侧是100多米高的陡峭石崖，腊子河穿峡而过，素有“天险”之称。国民党军凭险筑堡，以机枪封锁隘口和独木桥。红军正面强攻多次受阻后，发现敌人碉堡没有顶盖、崖顶未设防，于是派苗族小战士“云贵川”攀上绝壁，迂回至敌后投掷手榴弹，前后夹击攻克天险。</p>
+              <p>从地理教学角度看，这是一个典型的<strong>“地形制约军事行动”</strong>案例：峡谷的狭窄性限制了兵力展开，而崖壁的“可攀爬性”（采药小径）又成为破局关键。</p>
+              <div class="img-single-container">
+                <img src="images/lazikou_canyon.jpg" alt="腊子口峡谷" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'300\' height=\'150\' viewBox=\'0 0 300 150\'%3E%3Crect width=\'300\' height=\'150\' fill=\'%23f0e8e0\'/%3E%3Ctext x=\'50%\' y=\'50%\' font-size=\'14\' fill=\'%238a6a60\' text-anchor=\'middle\' dy=\'.3em\'%3E腊子口峡谷（图片示意）%3C/text%3E%3C/svg%3E'">
+                <span>腊子口峡谷地貌（两侧绝壁，中间隘口）</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-  </div>
 
-</main>
+    <!-- 面板4：教材链接与课标对应 -->
+    <div class="content-panel" id="panel-4">
+      <div class="panel-card">
+        <div class="panel-header">四、教材链接与课标对应</div>
+        <div class="panel-body">
+          <div class="textbook-link-box">
+            <table class="textbook-table">
+              <thead>
+                <tr>
+                  <th style="width: 18%;">对应教材/课标</th>
+                  <th style="width: 26%;">核心知识点</th>
+                  <th style="width: 30%;">本页面的教学切入点（迭部案例）</th>
+                  <th style="width: 26%;">核心素养</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="tb-tag">八年级上册</span>第二章 中国的自然环境<br>第一节 地形和地势</td>
+                  <td>我国地形类型多样，山区面积广大；地形对交通、军事、聚落的影响。</td>
+                  <td>以腊子口峡谷为例，分析“一夫当关，万夫莫开”的地形条件如何限制军事行动，以及红军如何利用崖壁“可攀爬性”破局。</td>
+                  <td>
+                    <span class="core-literacy">区域认知</span>：认识腊子口峡谷在迭部地形中的位置与形态；<br>
+                    <span class="core-literacy">综合思维</span>：分析地形对军事行动的制约与破局可能；<br>
+                    <span class="core-literacy">地理实践力</span>：通过地图与实景图判读峡谷地形特征。
+                  </td>
+                </tr>
+                <tr>
+                  <td><span class="tb-tag">乡土教育</span>红色文化研学</td>
+                  <td>长征精神的内涵；革命遗址的当代价值；红色旅游与乡村振兴。</td>
+                  <td>俄界会议旧址、腊子口战役纪念馆均为免费开放的爱国主义教育基地，高吉村已发展为全国乡村旅游重点村。央视报道中提到“2024年起村集体年均收入突破20万元”“旺藏镇苹果种植3600亩”等，是红色文旅带动乡村振兴的鲜活案例。</td>
+                  <td>
+                    <span class="core-literacy">人地协调观</span>：理解红色文旅与乡村生态、经济的协调发展；<br>
+                    <span class="core-literacy">综合思维</span>：分析红色资源—旅游—乡村振兴的关联；<br>
+                    <span class="core-literacy">区域认知</span>：认识高吉村、旺藏镇等迭部乡村的空间分布与特色。
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 面板5：延伸学习 -->
+    <div class="content-panel" id="panel-5">
+      <div class="panel-card">
+        <div class="panel-header">五、延伸学习：长征精神的时代内涵</div>
+        <div class="panel-body">
+          <div style="text-align: center; margin-bottom: 30px;">
+            <a href="red-spirit.html" class="enter-subpage-btn">
+              ➡️ 点击进入：长征精神与今日迭部
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 面板6：互动探究任务 -->
+    <div class="content-panel" id="panel-6">
+      <div class="panel-card">
+        <div class="panel-header">六、互动探究任务</div>
+        <div class="panel-body">
+          <div class="info-card" style="border-top-color: #f0c040;">
+            <h3>任务：如果你是红军指挥员</h3>
+            <p>观察地图上腊子口的位置和周边地形。红军从俄界出发向北，必须经过腊子口。如果你是指挥员，面对“正面强攻受阻”的局面，你会从地图上的哪个方向寻找突破口？</p>
+            <button class="task-btn" onclick="showTaskFeedback()">查看地理提示</button>
+            <div class="task-feedback" id="task-feedback">
+              <strong>地理提示：</strong>观察腊子口两侧的等高线（或崖壁符号）。正面隘口狭窄，兵力无法展开；但两侧崖壁并非完全垂直，当地采药人踩出的小径可以攀爬。红军的突破口不在“正面更猛的火力”，而在<strong>“敌人认为不可能的方向”</strong>——从崖顶迂回，向下攻击没有顶盖的碉堡。这就是地形阅读能力在实战中的价值。
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content-area -->
+</div><!-- /page-layout -->
 
 <footer>
   数据来源：央视新闻（2026-10-05）、共产党新闻网、甘肃省文化和旅游厅 · 教学用途网站<br>
@@ -421,25 +617,57 @@
 <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
 <script>
   (function() {
+    // ---------- 左侧导航切换 ----------
+    var navButtons = document.querySelectorAll('.side-nav button');
+    var panels = document.querySelectorAll('.content-panel');
+
+    function switchPanel(targetId) {
+      panels.forEach(function(p) { p.classList.remove('active'); });
+      var target = document.getElementById(targetId);
+      if (target) target.classList.add('active');
+      navButtons.forEach(function(btn) {
+        btn.classList.toggle('active', btn.dataset.target === targetId);
+      });
+      if (window.innerWidth <= 900) {
+        var contentArea = document.querySelector('.content-area');
+        if (contentArea) {
+          var offsetTop = contentArea.getBoundingClientRect().top + window.pageYOffset - 60;
+          window.scrollTo({ top: offsetTop, behavior: 'smooth' });
+        }
+      }
+    }
+
+    navButtons.forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var targetId = btn.dataset.target;
+        if (targetId) switchPanel(targetId);
+      });
+    });
+
+    if (!document.querySelector('.content-panel.active') && panels.length > 0) {
+      panels[0].classList.add('active');
+    }
+    if (navButtons.length > 0 && !document.querySelector('.side-nav button.active')) {
+      navButtons[0].classList.add('active');
+    }
+
+    // ---------- 地图（Leaflet） ----------
     var map = L.map('red-map', {
       center: [30.0, 108.0],
       zoom: 5,
       zoomControl: true
     });
 
-    // 高德卫星影像底图
     var gaodeSatellite = L.tileLayer(
       'https://webst0{s}.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}',
       { subdomains: '1234', maxZoom: 18, attribution: '&copy; 高德地图 · 卫星影像' }
     ).addTo(map);
 
-    // 高德路网标注
     var gaodeLabels = L.tileLayer(
       'https://wprd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&style=7&x={x}&y={y}&z={z}',
       { subdomains: '1234', maxZoom: 18, opacity: 0.95, attribution: '&copy; 高德地图 · 路网标注' }
     ).addTo(map);
 
-    // ===== 迭部县行政边界：本地 GeoJSON 加载 =====
     var diebuBoundary = null;
 
     fetch('diebu.json')
@@ -476,7 +704,6 @@
         console.warn('迭部县边界加载失败:', err);
       });
 
-    // 长征路线（示意）
     L.polyline([
       [25.9, 116.0], [26.5, 114.0], [26.6, 109.0], [26.6, 107.0], [27.0, 106.0],
       [27.8, 105.0], [26.0, 102.0], [29.0, 102.5], [30.5, 102.5], [32.0, 102.5],
@@ -486,14 +713,12 @@
       color: '#c0392b', weight: 3, opacity: 0.8, dashArray: '8, 6', smoothFactor: 1.5
     }).addTo(map).bindPopup("红军长征路线（示意）");
 
-    // 自定义红星图标
     var redStarIcon = L.divIcon({
       className: 'custom-marker',
       html: '<div style="width:20px;height:20px;background:#8a2b1d;border-radius:50%;border:2px solid #f0c040;display:flex;align-items:center;justify-content:center;color:#f0c040;font-size:14px;font-weight:bold;">★</div>',
       iconSize: [24, 24], iconAnchor: [12, 12], popupAnchor: [0, -12]
     });
 
-    // 俄界会议旧址 —— 注记在左侧
     var ejieMarker = L.marker([33.98, 103.12], { icon: redStarIcon }).addTo(map);
     ejieMarker.bindTooltip("俄界会议旧址", {
       permanent: true,
@@ -507,7 +732,6 @@
       <span style="font-size:12px; color:#8a2b1d; font-weight:bold;">地理视角：红军走出草地后进入甘肃的第一站，甘川交界的峡谷藏寨。</span>
     `);
 
-    // 茨日那毛泽东旧居 —— 注记在右侧
     var cirinaMarker = L.marker([34.02, 103.35], { icon: redStarIcon }).addTo(map);
     cirinaMarker.bindTooltip("茨日那毛泽东旧居", {
       permanent: true,
@@ -521,7 +745,6 @@
       <span style="font-size:12px; color:#8a2b1d; font-weight:bold;">地理视角：位于俄界与腊子口之间的白龙江支流河谷，是行军途中的中间节点。</span>
     `);
 
-    // 腊子口战役遗址 —— 注记在右侧
     var lazikouMarker = L.marker([34.15, 103.85], { icon: redStarIcon }).addTo(map);
     lazikouMarker.bindTooltip("腊子口战役遗址", {
       permanent: true,
@@ -535,12 +758,10 @@
       <span style="font-size:12px; color:#8a2b1d; font-weight:bold;">地理视角：隘口宽仅8米，两侧崖壁100余米，地形决定必须“正面牵制+崖顶迂回”。</span>
     `);
 
-    // 迭部境内行军路线
     L.polyline([[33.98, 103.12], [34.02, 103.35], [34.15, 103.85]], {
       color: '#e67e22', weight: 5, opacity: 0.9
     }).addTo(map).bindPopup("红军在迭部境内的行军路线：俄界 → 茨日那 → 腊子口");
 
-    // 缩放联动
     map.on('zoomend', function() {
       if (map.getZoom() >= 8 && diebuBoundary) {
         map.fitBounds(diebuBoundary.getBounds(), { padding: [50, 50] });
@@ -549,7 +770,6 @@
 
     L.control.scale({ imperial: false, metric: true, position: 'bottomleft' }).addTo(map);
 
-    // 图例
     var legend = L.control({ position: 'bottomright' });
     legend.onAdd = function() {
       var div = L.DomUtil.create('div');
@@ -569,7 +789,6 @@
     };
     legend.addTo(map);
 
-    // 图层切换
     L.control.layers(null, {
       "卫星影像": gaodeSatellite,
       "路网标注": gaodeLabels
@@ -581,6 +800,19 @@
         feedbackDiv.style.display = feedbackDiv.style.display === 'block' ? 'none' : 'block';
       }
     };
+
+    // 地图在面板显示后需要重新计算尺寸（因为初始隐藏时容器尺寸为0）
+    var mapPanel = document.getElementById('panel-1');
+    var observer = new MutationObserver(function(mutations) {
+      mutations.forEach(function(m) {
+        if (m.attributeName === 'class') {
+          if (mapPanel.classList.contains('active')) {
+            setTimeout(function() { map.invalidateSize(); }, 100);
+          }
+        }
+      });
+    });
+    observer.observe(mapPanel, { attributes: true });
   })();
 </script>
 </body>
