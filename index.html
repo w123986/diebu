@@ -6,64 +6,229 @@
 <title>多尺度乡土地理教学 · 迭部</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body {
-    font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
-    background: #f4f6f4;
-    color: #1f2d1f;
-    line-height: 1.6;
-  }
-  header { background: #2c5f2d; color: #fff; padding: 28px 20px; text-align: center; }
-  header h1 { font-size: 26px; letter-spacing: 2px; }
-  header p  { font-size: 14px; opacity: .85; margin-top: 6px; }
-  .top-nav {
-    display: flex; justify-content: center; flex-wrap: wrap; gap: 4px;
-    background: #1d4d1e; padding: 0 12px; position: sticky; top: 0; z-index: 1000;
-    box-shadow: 0 2px 6px rgba(0,0,0,.12);
-  }
-  .top-nav a { color: #d8e8d8; text-decoration: none; font-size: 14px; padding: 12px 14px; display: block; border-bottom: 3px solid transparent; transition: color .15s, border-color .15s; }
-  .top-nav a:hover { color: #fff; border-bottom-color: #8fc98f; }
-  .top-nav a.active { color: #fff; border-bottom-color: #f0c040; font-weight: 600; }
-  .map-section { max-width: 1100px; margin: 24px auto 0; padding: 0 20px; }
-  .map-container { background: #fff; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,.08); display: flex; flex-direction: column; }
-  .map-header { padding: 12px 18px; background: #eef3ee; border-bottom: 1px solid #d0dcd0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
-  .map-header h2 { font-size: 16px; color: #2c5f2d; }
-  .map-tips { font-size: 12px; color: #7a857a; }
-  #leaflet-map { width: 100%; height: 420px; z-index: 1; }
+  /* 引入优雅的衬线字体，增强学术感 */
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&display=swap');
 
-  /* 模块网格 */
-  .module-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; max-width: 1100px; margin: 32px auto; padding: 0 20px; }
-  .module-card { background: #fff; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,.08); text-decoration: none; color: inherit; display: flex; flex-direction: column; transition: transform .2s, box-shadow .2s; }
-  .module-card:hover { transform: translateY(-4px); box-shadow: 0 8px 22px rgba(0,0,0,.15); }
+  :root {
+    --primary-dark: #1b3a2a;      /* 深邃墨绿 */
+    --primary-mid: #2c5f2d;       /* 森林绿 */
+    --accent-gold: #C5A059;       /* 暗金点缀 */
+    --bg-base: #f7f8f6;           /* 极浅暖灰背景 */
+    --text-main: #2c332c;         /* 沉稳深灰绿 */
+    --text-muted: #647364;        /* 辅助灰绿 */
+    --card-bg: #ffffff;
+    --border-light: #e8ebe6;
+    --shadow-sm: 0 2px 8px rgba(27, 58, 42, 0.04);
+    --shadow-md: 0 8px 24px rgba(27, 58, 42, 0.08);
+    --font-serif: "Noto Serif SC", "Songti SC", "SimSun", serif;
+    --font-sans: "Microsoft YaHei", "PingFang SC", sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
   
-  /* 图片调整为 object-fit: contain，保证完整显示，高度适当缩小 */
+  body {
+    font-family: var(--font-sans);
+    background-color: var(--bg-base);
+    /* 增加极淡的纹理质感背景，告别单调 */
+    background-image: radial-gradient(#e0e5df 0.5px, transparent 0.5px);
+    background-size: 24px 24px;
+    color: var(--text-main);
+    line-height: 1.8;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* 头部：深沉且有层次 */
+  header { 
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-mid) 100%);
+    color: #fff; 
+    padding: 48px 20px; 
+    text-align: center; 
+    position: relative;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  }
+  header::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, transparent, var(--accent-gold), transparent);
+  }
+  header h1 { 
+    font-family: var(--font-serif);
+    font-size: 32px; 
+    letter-spacing: 4px; 
+    font-weight: 700;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  }
+  header p  { 
+    font-size: 15px; 
+    opacity: .8; 
+    margin-top: 12px; 
+    letter-spacing: 2px;
+    font-weight: 300;
+  }
+
+  /* 顶部导航：更规整、有质感 */
+  .top-nav {
+    display: flex; justify-content: center; flex-wrap: wrap; gap: 0;
+    background: #fff; 
+    padding: 0 12px; 
+    position: sticky; top: 0; z-index: 1000;
+    box-shadow: 0 2px 12px rgba(0,0,0,.06);
+    border-bottom: 1px solid var(--border-light);
+  }
+  .top-nav a { 
+    color: var(--text-muted); 
+    text-decoration: none; 
+    font-size: 14px; 
+    padding: 16px 20px; 
+    display: block; 
+    font-weight: 500;
+    position: relative;
+    transition: color .3s;
+  }
+  .top-nav a::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 50%; right: 50%;
+    height: 3px;
+    background: var(--accent-gold);
+    transition: left .3s, right .3s;
+    border-radius: 3px 3px 0 0;
+  }
+  .top-nav a:hover { color: var(--primary-mid); }
+  .top-nav a:hover::after { left: 20%; right: 20%; }
+  .top-nav a.active { color: var(--primary-dark); font-weight: 700; }
+  .top-nav a.active::after { left: 20%; right: 20%; }
+
+  /* 地图区域：精致容器 */
+  .map-section { max-width: 1140px; margin: 40px auto 0; padding: 0 24px; }
+  .map-container { 
+    background: #fff; 
+    border-radius: 12px; 
+    overflow: hidden; 
+    box-shadow: var(--shadow-md); 
+    border: 1px solid var(--border-light);
+    display: flex; flex-direction: column; 
+  }
+  .map-header { 
+    padding: 16px 24px; 
+    background: #fafcf9; 
+    border-bottom: 1px solid var(--border-light); 
+    display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; 
+  }
+  .map-header h2 { 
+    font-family: var(--font-serif);
+    font-size: 17px; 
+    color: var(--primary-dark); 
+    font-weight: 600;
+    letter-spacing: 1px;
+  }
+  .map-tips { font-size: 13px; color: var(--text-muted); font-weight: 300; }
+  #leaflet-map { width: 100%; height: 460px; z-index: 1; }
+
+  /* 模块网格：更宽的间距，更优雅的卡片 */
+  .module-grid { 
+    display: grid; 
+    grid-template-columns: repeat(3, 1fr); 
+    gap: 32px; 
+    max-width: 1140px; 
+    margin: 48px auto 60px; 
+    padding: 0 24px; 
+  }
+  .module-card { 
+    background: var(--card-bg); 
+    border-radius: 12px; 
+    overflow: hidden; 
+    box-shadow: var(--shadow-sm); 
+    text-decoration: none; 
+    color: inherit; 
+    display: flex; flex-direction: column; 
+    transition: transform .35s cubic-bezier(0.165, 0.84, 0.44, 1), box-shadow .35s;
+    border: 1px solid var(--border-light);
+  }
+  .module-card:hover { 
+    transform: translateY(-6px); 
+    box-shadow: 0 16px 32px rgba(27, 58, 42, 0.12); 
+  }
+  
+  /* 图片：拒绝裁切，增加优雅的内衬底色 */
   .module-card img {
     width: 100%;
-    height: 150px;          /* 从 170px 调整为 150px，适当缩小 */
-    object-fit: contain;    /* 改为 contain 让图片完整显示，不裁切 */
+    height: 160px;
+    object-fit: contain; 
     display: block;
-    background: #f0f4f0;    /* 浅底色，弥补 contain 留下的空白 */
-    padding: 6px;           /* 内边距让图片和边框有呼吸感 */
+    background: #f2f5f1; /* 浅灰绿底色，衬托图片 */
+    padding: 16px;       /* 增加内边距，让图片看起来像装裱在画框中 */
+    border-bottom: 1px solid var(--border-light);
+    transition: padding .3s, background .3s;
   }
-  .module-body { padding: 16px 18px 20px; }
-  .module-body h2 { font-size: 18px; color: #2c5f2d; margin-bottom: 8px; }
-  .module-body p { font-size: 13px; color: #556055; }
-  .module-card.red { background: #fdf6f0; }
-  .module-card.red .module-body h2 { color: #8a2b1d; }
-  .module-card.message { background: #eef3ee; }
-  .module-card.message .module-body h2 { color: #1d4d1e; }
-  footer { text-align: center; padding: 24px 20px 40px; font-size: 12px; color: #7a857a; }
+  .module-card:hover img {
+    background: #eef2ec;
+    padding: 12px;       /* 悬停时轻微放大图片感 */
+  }
   
-  /* 响应式调整 */
-  @media (max-width: 760px) {
-    .module-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
-    .module-card img { height: 120px; }   /* 小屏时进一步缩小 */
-    #leaflet-map { height: 320px; }
+  .module-body { padding: 24px; }
+  .module-body h2 { 
+    font-family: var(--font-serif);
+    font-size: 19px; 
+    color: var(--primary-dark); 
+    margin-bottom: 12px; 
+    font-weight: 600;
+    letter-spacing: 1px;
+    position: relative;
+    display: inline-block;
   }
-  @media (max-width: 480px) {
-    .module-grid { grid-template-columns: 1fr; }
-    header h1 { font-size: 20px; }
-    .top-nav a { padding: 10px 9px; font-size: 13px; }
+  /* 标题左侧的暗金小竖线 */
+  .module-body h2::before {
+    content: '';
+    display: inline-block;
+    width: 4px;
+    height: 16px;
+    background: var(--accent-gold);
+    margin-right: 10px;
+    vertical-align: middle;
+    border-radius: 2px;
+  }
+  .module-body p { 
+    font-size: 14px; 
+    color: var(--text-muted); 
+    line-height: 1.8;
+    text-align: justify;
+  }
+
+  /* 特殊卡片色调微调 */
+  .module-card.red { background: #fdfbf9; }
+  .module-card.red .module-body h2 { color: #8a2b1d; }
+  .module-card.red .module-body h2::before { background: #8a2b1d; }
+  
+  .module-card.message { background: #f8fbf8; }
+  .module-card.message .module-body h2 { color: var(--primary-dark); }
+
+  /* 页脚：低调有质感 */
+  footer { 
+    text-align: center; 
+    padding: 32px 24px 48px; 
+    font-size: 13px; 
+    color: var(--text-muted); 
+    border-top: 1px solid var(--border-light);
+    background: #fff;
+    letter-spacing: 1px;
+  }
+
+  /* 响应式调整 */
+  @media (max-width: 900px) {
+    .module-grid { grid-template-columns: repeat(2, 1fr); gap: 24px; }
+    .module-card img { height: 140px; padding: 12px; }
+  }
+  @media (max-width: 600px) {
+    header h1 { font-size: 24px; letter-spacing: 2px; }
+    header { padding: 32px 16px; }
+    .module-grid { grid-template-columns: 1fr; gap: 20px; padding: 0 16px; }
+    .module-card img { height: 150px; }
+    .top-nav a { padding: 12px 14px; font-size: 13px; }
+    #leaflet-map { height: 340px; }
+    .module-body { padding: 20px; }
   }
 </style>
 </head>
@@ -226,7 +391,6 @@
     gannanGeoJSONData = gannanData;
     diebuGeoJSONData = diebuData;
 
-    // ===== 甘南州边界：红色实线，置于最底层 =====
     if (gannanGeoJSONData && gannanGeoJSONData.features) {
       gannanLayer = L.geoJSON(gannanGeoJSONData, {
         style: { color: '#d32f2f', weight: 2.8, opacity: 0.9, fillColor: '#d32f2f', fillOpacity: 0.02 },
@@ -239,17 +403,16 @@
       gannanLayer.bringToBack();
     }
 
-    // ===== 迭部县边界 =====
     if (diebuGeoJSONData && diebuGeoJSONData.features) {
       try { diebuPolygonTurf = turf.feature(diebuGeoJSONData.features[0]); } catch (e) {}
 
       diebuLayer = L.geoJSON(diebuGeoJSONData, {
         style: {
-          color: '#f0c040',
+          color: '#C5A059', // 使用暗金色边框，更显高级
           weight: 3.5,
           opacity: 1,
-          fillColor: '#f0c040',
-          fillOpacity: 0.18,
+          fillColor: '#C5A059',
+          fillOpacity: 0.12,
           dashArray: '10, 5'
         },
         onEachFeature: function(feature, layer) {
@@ -274,7 +437,8 @@
       L.marker(center, {
         icon: L.divIcon({
           className: 'diebu-highlight-label',
-          html: '<div style="background:#f0c040;color:#1d2b1d;font-size:' + DIEBU_LABEL_FONT + 'px;font-weight:bold;letter-spacing:2px;padding:5px 18px;border-radius:22px;border:2px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.35);white-space:nowrap;text-shadow:0 1px 0 rgba(255,255,255,.5);">迭部县</div>',
+          // 标签也改为暗金底色
+          html: '<div style="background:#C5A059;color:#1d2b1d;font-size:' + DIEBU_LABEL_FONT + 'px;font-weight:bold;letter-spacing:2px;padding:5px 18px;border-radius:22px;border:2px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.35);white-space:nowrap;text-shadow:0 1px 0 rgba(255,255,255,.5);">迭部县</div>',
           iconSize: [110, 36], iconAnchor: [55, 18]
         }), interactive: false, zIndexOffset: 1000
       }).addTo(map);
@@ -351,7 +515,6 @@
     });
   }
 
-  // 并行加载：甘南州 + 迭部县 + 水系（水系可选）
   Promise.all([
     fetchJSON('gannan.json'),
     fetchJSON('diebu.json'),
