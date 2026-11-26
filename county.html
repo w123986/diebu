@@ -47,12 +47,109 @@
   .top-nav a:hover { color: #fff; border-bottom-color: #8fc98f; }
   .top-nav a.active { color: #fff; border-bottom-color: #f0c040; font-weight: 600; }
 
-  .content-container {
-    max-width: 1100px;
+  /* ===== 左侧导航 + 右侧内容 布局 ===== */
+  .page-layout {
+    display: flex;
+    max-width: 1200px;
     margin: 32px auto;
     padding: 0 20px;
+    gap: 28px;
+    align-items: flex-start;
   }
 
+  .side-nav {
+    flex: 0 0 240px;
+    width: 240px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,.08);
+    padding: 16px 0;
+    position: sticky;
+    top: 72px;
+    align-self: flex-start;
+    max-height: calc(100vh - 100px);
+    overflow-y: auto;
+  }
+
+  .side-nav .side-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #1d4d1e;
+    padding: 4px 20px 12px;
+    border-bottom: 2px solid #e2eee2;
+    margin-bottom: 8px;
+    letter-spacing: .5px;
+  }
+
+  .side-nav button {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
+    border-left: 4px solid transparent;
+    padding: 12px 20px;
+    font-size: 14.5px;
+    color: #2c5f2d;
+    cursor: pointer;
+    font-family: inherit;
+    line-height: 1.5;
+    transition: background .15s, border-color .15s, color .15s;
+    border-radius: 0 6px 6px 0;
+  }
+
+  .side-nav button:hover {
+    background: #eef5ee;
+    color: #1d4d1e;
+  }
+
+  .side-nav button.active {
+    background: #e6f0e6;
+    border-left-color: #f0c040;
+    font-weight: 700;
+    color: #1d4d1e;
+  }
+
+  .content-area {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+
+  .content-panel {
+    display: none;
+    animation: fadeUp .25s ease;
+  }
+  .content-panel.active {
+    display: block;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .panel-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,.08);
+    overflow: hidden;
+    margin-bottom: 24px;
+  }
+
+  .panel-card > .panel-header {
+    padding: 20px 28px;
+    font-size: 19px;
+    color: #2c5f2d;
+    font-weight: 700;
+    border-bottom: 2px solid #d8e8d8;
+    background: #fff;
+  }
+
+  .panel-body {
+    padding: 20px 28px 24px;
+  }
+
+  /* 原有样式保持不变 */
   .section-title {
     font-size: 22px;
     color: #2c5f2d;
@@ -83,7 +180,7 @@
   #county-map { width: 100%; height: 450px; z-index: 1; }
   .leaflet-control-attribution { font-size: 10px !important; }
 
-  /* ===== 自定义红色标记 ===== */
+  /* 自定义红色标记 */
   .custom-red-marker { background: none; border: none; }
   .marker-pin {
     width: 28px; height: 28px;
@@ -227,7 +324,6 @@
     display: inline-block; background: #2c5f2d; color: #fff;
     font-size: 12px; padding: 2px 8px; border-radius: 4px; margin-right: 5px;
   }
-  /* 核心素养关键词标红加粗 */
   .core-literacy {
     color: #c0392b;
     font-weight: bold;
@@ -247,6 +343,45 @@
 
   footer { text-align: center; padding: 24px 20px 40px; font-size: 12px; color: #7a857a; }
 
+  @media (max-width: 900px) {
+    .page-layout {
+      flex-direction: column;
+      padding: 0 16px;
+      margin-top: 20px;
+      gap: 16px;
+    }
+    .side-nav {
+      position: static;
+      width: 100%;
+      flex: 0 0 auto;
+      max-height: none;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      padding: 10px;
+      border-radius: 10px;
+    }
+    .side-nav .side-title {
+      width: 100%;
+      padding: 2px 8px 8px;
+      border-bottom: none;
+      margin-bottom: 0;
+    }
+    .side-nav button {
+      width: auto;
+      border-left: none;
+      border-bottom: 3px solid transparent;
+      border-radius: 6px;
+      padding: 8px 14px;
+      font-size: 13.5px;
+    }
+    .side-nav button.active {
+      border-left: none;
+      border-bottom-color: #f0c040;
+      background: #e6f0e6;
+    }
+  }
+
   @media (max-width: 760px) {
     .info-grid { grid-template-columns: 1fr; }
     #county-map { height: 320px; }
@@ -256,10 +391,16 @@
     .local-scale-text { width: 100%; }
     .specialty-grid { grid-template-columns: 1fr; }
     .admin-towns-grid { grid-template-columns: repeat(2, 1fr); }
+    .panel-body { padding: 16px; }
+    .panel-card > .panel-header { padding: 16px; font-size: 17px; }
   }
   @media (max-width: 480px) {
     .admin-towns-grid { grid-template-columns: 1fr; }
     .admin-stats { gap: 15px; }
+    header h1 { font-size: 20px; }
+    .top-nav a { padding: 10px 9px; font-size: 13px; }
+    .page-layout { padding: 0 10px; }
+    .side-nav button { font-size: 12.5px; padding: 7px 12px; }
   }
 </style>
 </head>
@@ -280,174 +421,231 @@
   <a href="message.html">互动留言</a>
 </nav>
 
-<main class="content-container">
+<!-- ===== 左侧导航 + 右侧内容 布局 ===== -->
+<div class="page-layout">
 
-  <h2 class="section-title">一、地图上的县域视角（并下推至地方尺度）</h2>
+  <aside class="side-nav" aria-label="页面内容导航">
+    <div class="side-title">📌 内容导航</div>
+    <button class="active" data-target="panel-1">一、地图上的县域视角</button>
+    <button data-target="panel-2">二、核心知识点解析</button>
+    <button data-target="panel-3">三、地方尺度：走进扎尕那村落</button>
+    <button data-target="panel-4">四、迭部县特产：气候与地形的馈赠</button>
+    <button data-target="panel-5">五、迭部县行政区划</button>
+    <button data-target="panel-6">六、教材链接与课标对应</button>
+    <button data-target="panel-7">七、互动探究任务</button>
+  </aside>
 
-  <div class="map-container">
-    <div class="map-header">
-      <h2>📍 缩放地图，观察白龙江干流、支流与聚落的分布关系</h2>
-      <span class="map-tips">当前视角：<strong id="scale-label">迭部县域尺度</strong></span>
-    </div>
-    <div id="county-map"></div>
-  </div>
+  <div class="content-area">
 
-  <h2 class="section-title">二、核心知识点解析</h2>
-
-  <div class="info-grid">
-    <div class="info-card">
-      <h3>1. 垂直地带性：一山有四季</h3>
-      <p>迭部地处青藏高原东缘，海拔从白龙江谷底的 1600 米一直攀升至 4920 米。巨大的相对高差使得这里发育了完整的<strong>垂直自然带谱</strong>：谷底是阔叶林，向上依次为针阔混交林、针叶林、高山灌丛草甸，直至冰雪带。</p>
-      <p>这种“一山有四季，十里不同天”的景观，是教学中讲解<strong>“山地垂直地域分异规律”</strong>的绝佳本土案例。</p>
-      <div class="img-single-container">
-        <img src="images/county-1.jpg" alt="迭部山地垂直带谱">
-        <span>迭部山地垂直自然带谱（从河谷到高山草甸）</span>
+    <!-- 面板1：地图上的县域视角 -->
+    <div class="content-panel active" id="panel-1">
+      <div class="panel-card">
+        <div class="panel-header">一、地图上的县域视角（并下推至地方尺度）</div>
+        <div class="panel-body">
+          <div class="map-container">
+            <div class="map-header">
+              <h2>📍 缩放地图，观察白龙江干流、支流与聚落的分布关系</h2>
+              <span class="map-tips">当前视角：<strong id="scale-label">迭部县域尺度</strong></span>
+            </div>
+            <div id="county-map"></div>
+          </div>
+        </div>
       </div>
     </div>
 
-    <div class="info-card">
-      <h3>2. 河谷聚落：向白龙江要生存空间</h3>
-      <p>迭部“九山半水半分田”，耕地资源极其宝贵。由于高海拔地区气候寒冷，藏寨和农田主要分布在<strong>白龙江干流及其支流的河谷地带</strong>。这里地势相对平坦、水源充足、热量条件较好，形成了典型的<strong>“河谷农业”</strong>。</p>
-      <p>同时，受地形限制，村落多依山就势而建，例如扎尕那的榻板房藏寨，正是人类适应高山峡谷环境的生动体现。</p>
-      <div class="img-single-container">
-        <img src="images/county-2.jpg" alt="白龙江河谷藏寨">
-        <span>白龙江干流河谷地带的藏寨与农田</span>
+    <!-- 面板2：核心知识点解析 -->
+    <div class="content-panel" id="panel-2">
+      <div class="panel-card">
+        <div class="panel-header">二、核心知识点解析</div>
+        <div class="panel-body">
+          <div class="info-grid">
+            <div class="info-card">
+              <h3>1. 垂直地带性：一山有四季</h3>
+              <p>迭部地处青藏高原东缘，海拔从白龙江谷底的 1600 米一直攀升至 4920 米。巨大的相对高差使得这里发育了完整的<strong>垂直自然带谱</strong>：谷底是阔叶林，向上依次为针阔混交林、针叶林、高山灌丛草甸，直至冰雪带。</p>
+              <p>这种“一山有四季，十里不同天”的景观，是教学中讲解<strong>“山地垂直地域分异规律”</strong>的绝佳本土案例。</p>
+              <div class="img-single-container">
+                <img src="images/county-1.jpg" alt="迭部山地垂直带谱">
+                <span>迭部山地垂直自然带谱（从河谷到高山草甸）</span>
+              </div>
+            </div>
+
+            <div class="info-card">
+              <h3>2. 河谷聚落：向白龙江要生存空间</h3>
+              <p>迭部“九山半水半分田”，耕地资源极其宝贵。由于高海拔地区气候寒冷，藏寨和农田主要分布在<strong>白龙江干流及其支流的河谷地带</strong>。这里地势相对平坦、水源充足、热量条件较好，形成了典型的<strong>“河谷农业”</strong>。</p>
+              <p>同时，受地形限制，村落多依山就势而建，例如扎尕那的榻板房藏寨，正是人类适应高山峡谷环境的生动体现。</p>
+              <div class="img-single-container">
+                <img src="images/county-2.jpg" alt="白龙江河谷藏寨">
+                <span>白龙江干流河谷地带的藏寨与农田</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
 
-  <h2 class="section-title">三、地方尺度：走进扎尕那村落</h2>
-  
-  <div class="local-scale-section">
-    <div class="local-scale-badge">📌 尺度下推：村落/社区</div>
-    <div class="local-scale-content">
-      <img src="images/county-3.jpg" alt="扎尕那藏寨(榻板房)" class="local-scale-img">
-      <div class="local-scale-text">
-        <h3>扎尕那：石头城里的农林牧复合系统</h3>
-        <p>扎尕那藏语意为“石匣子”，由四个藏族村落组成。这里的先民在海拔 2400—3300 米之间，创造了<strong>“高山放牧、山坡林业、河谷农耕”</strong>的农林牧垂直立体循环模式，2017 年被联合国粮农组织认定为<strong>全球重要农业文化遗产（GIAHS）</strong>。</p>
-        <p>从地理视角看，扎尕那是“地方尺度”上人地关系最和谐的缩影：<strong>民居依山就势（适应地形），榻板房外不见木（适应气候），梯田沿等高线分布（保持水土）</strong>。这不仅是地理知识的应用，更是藏族生态智慧的体现。</p>
-        <a href="global.html" style="display: inline-block; margin-top: 10px; background: #2c5f2d; color: #fff; text-decoration: none; padding: 6px 15px; border-radius: 4px; font-size: 13px;">
-          🔍 切换至全球尺度，看扎尕那的世界坐标 →
-        </a>
+    <!-- 面板3：地方尺度 -->
+    <div class="content-panel" id="panel-3">
+      <div class="panel-card">
+        <div class="panel-header">三、地方尺度：走进扎尕那村落</div>
+        <div class="panel-body">
+          <div class="local-scale-section">
+            <div class="local-scale-badge">📌 尺度下推：村落/社区</div>
+            <div class="local-scale-content">
+              <img src="images/county-3.jpg" alt="扎尕那藏寨(榻板房)" class="local-scale-img">
+              <div class="local-scale-text">
+                <h3>扎尕那：石头城里的农林牧复合系统</h3>
+                <p>扎尕那藏语意为“石匣子”，由四个藏族村落组成。这里的先民在海拔 2400—3300 米之间，创造了<strong>“高山放牧、山坡林业、河谷农耕”</strong>的农林牧垂直立体循环模式，2017 年被联合国粮农组织认定为<strong>全球重要农业文化遗产（GIAHS）</strong>。</p>
+                <p>从地理视角看，扎尕那是“地方尺度”上人地关系最和谐的缩影：<strong>民居依山就势（适应地形），榻板房外不见木（适应气候），梯田沿等高线分布（保持水土）</strong>。这不仅是地理知识的应用，更是藏族生态智慧的体现。</p>
+                <a href="global.html" style="display: inline-block; margin-top: 10px; background: #2c5f2d; color: #fff; text-decoration: none; padding: 6px 15px; border-radius: 4px; font-size: 13px;">
+                  🔍 切换至全球尺度，看扎尕那的世界坐标 →
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
 
-  <h2 class="section-title">四、迭部县特产：气候与地形的馈赠</h2>
-  
-  <div class="specialty-grid">
-    <div class="specialty-card">
-      <img src="images/juemazhu.jpg" alt="迭部蕨麻猪">
-      <div class="specialty-info">
-        <h4>蕨麻猪 <span class="specialty-tag">国家地理标志</span></h4>
-        <p>常年在高山草甸放养，以采食蕨麻（人参果）等野生植物为主，肉质紧实、味道鲜美，是迭部藏区特有的高原生态畜种。</p>
-        <div class="specialty-geo"><strong>地理成因：</strong>高寒气候与广阔的高山草甸，孕育了独特的放牧型畜牧业。</div>
+    <!-- 面板4：迭部县特产 -->
+    <div class="content-panel" id="panel-4">
+      <div class="panel-card">
+        <div class="panel-header">四、迭部县特产：气候与地形的馈赠</div>
+        <div class="panel-body">
+          <div class="specialty-grid">
+            <div class="specialty-card">
+              <img src="images/juemazhu.jpg" alt="迭部蕨麻猪">
+              <div class="specialty-info">
+                <h4>蕨麻猪 <span class="specialty-tag">国家地理标志</span></h4>
+                <p>常年在高山草甸放养，以采食蕨麻（人参果）等野生植物为主，肉质紧实、味道鲜美，是迭部藏区特有的高原生态畜种。</p>
+                <div class="specialty-geo"><strong>地理成因：</strong>高寒气候与广阔的高山草甸，孕育了独特的放牧型畜牧业。</div>
+              </div>
+            </div>
+            <div class="specialty-card">
+              <img src="images/yangdujun.jpg" alt="迭部羊肚菌">
+              <div class="specialty-info">
+                <h4>迭部羊肚菌 <span class="specialty-tag">林下经济</span></h4>
+                <p>因菌盖表面凹凸不平、状如羊肚而得名。迭部森林覆盖率高，林下腐殖质丰富、气候阴凉湿润，是羊肚菌生长的天然温床。</p>
+                <div class="specialty-geo"><strong>地理成因：</strong>茂密的原始森林与湿润的气候，提供了绝佳的林下微环境。</div>
+              </div>
+            </div>
+            <div class="specialty-card">
+              <img src="images/zangyaocai.jpg" alt="迭部藏中药材">
+              <div class="specialty-info">
+                <h4>藏中药材（党参/当归） <span class="specialty-tag">特色种植</span></h4>
+                <p>迭部高海拔、大温差、强紫外线的气候条件，非常适合根茎类药材有效成分的积累，出产的党参、当归品质上乘。</p>
+                <div class="specialty-geo"><strong>地理成因：</strong>高原冷凉气候与显著的垂直地带性，造就了优质药材产区。</div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="specialty-card">
-      <img src="images/yangdujun.jpg" alt="迭部羊肚菌">
-      <div class="specialty-info">
-        <h4>迭部羊肚菌 <span class="specialty-tag">林下经济</span></h4>
-        <p>因菌盖表面凹凸不平、状如羊肚而得名。迭部森林覆盖率高，林下腐殖质丰富、气候阴凉湿润，是羊肚菌生长的天然温床。</p>
-        <div class="specialty-geo"><strong>地理成因：</strong>茂密的原始森林与湿润的气候，提供了绝佳的林下微环境。</div>
+
+    <!-- 面板5：迭部县行政区划 -->
+    <div class="content-panel" id="panel-5">
+      <div class="panel-card">
+        <div class="panel-header">五、迭部县行政区划</div>
+        <div class="panel-body">
+          <div class="admin-division-box">
+            <div class="admin-stats">
+              <div class="admin-stat-item"><div class="num">5</div><div class="lbl">镇</div></div>
+              <div class="admin-stat-item"><div class="num">6</div><div class="lbl">乡</div></div>
+              <div class="admin-stat-item"><div class="num">52</div><div class="lbl">行政村</div></div>
+              <div class="admin-stat-item"><div class="num">2</div><div class="lbl">社区</div></div>
+            </div>
+
+            <div class="admin-towns-grid">
+              <div class="admin-town-item"><span class="town-type zhen">镇</span> 电尕镇（县城驻地）</div>
+              <div class="admin-town-item"><span class="town-type zhen">镇</span> 益哇镇（扎尕那村所在）</div>
+              <div class="admin-town-item"><span class="town-type zhen">镇</span> 旺藏镇</div>
+              <div class="admin-town-item"><span class="town-type zhen">镇</span> 腊子口镇</div>
+              <div class="admin-town-item"><span class="town-type zhen">镇</span> 洛大镇</div>
+              <div class="admin-town-item"><span class="town-type xiang">乡</span> 卡坝乡</div>
+              <div class="admin-town-item"><span class="town-type xiang">乡</span> 达拉乡（俄界会议旧址所在）</div>
+              <div class="admin-town-item"><span class="town-type xiang">乡</span> 尼傲乡</div>
+              <div class="admin-town-item"><span class="town-type xiang">乡</span> 阿夏乡</div>
+              <div class="admin-town-item"><span class="town-type xiang">乡</span> 多儿乡</div>
+              <div class="admin-town-item"><span class="town-type xiang">乡</span> 桑坝乡</div>
+            </div>
+
+            <p class="admin-note">数据来源：迭部县人民政府（截至2026年）· 县人民政府驻电尕镇兴迭东街39号</p>
+
+            <div style="text-align: center; margin-top: 20px;">
+              <a href="towns.html" style="display: inline-block; background: #2c5f2d; color: #fff; text-decoration: none; padding: 10px 25px; border-radius: 20px; font-size: 14px; font-weight: bold; box-shadow: 0 3px 8px rgba(44,95,45,0.3);">
+                🏘️ 点击查看 11 个乡镇（镇/乡）详情介绍 →
+              </a>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="specialty-card">
-      <img src="images/zangyaocai.jpg" alt="迭部藏中药材">
-      <div class="specialty-info">
-        <h4>藏中药材（党参/当归） <span class="specialty-tag">特色种植</span></h4>
-        <p>迭部高海拔、大温差、强紫外线的气候条件，非常适合根茎类药材有效成分的积累，出产的党参、当归品质上乘。</p>
-        <div class="specialty-geo"><strong>地理成因：</strong>高原冷凉气候与显著的垂直地带性，造就了优质药材产区。</div>
+
+    <!-- 面板6：教材链接与课标对应 -->
+    <div class="content-panel" id="panel-6">
+      <div class="panel-card">
+        <div class="panel-header">六、教材链接与课标对应</div>
+        <div class="panel-body">
+          <div class="textbook-link-box">
+            <table class="textbook-table">
+              <thead>
+                <tr>
+                  <th style="width: 20%;">对应教材章节</th>
+                  <th style="width: 28%;">核心知识点</th>
+                  <th style="width: 30%;">本页面的教学切入点（迭部案例）</th>
+                  <th style="width: 22%;">核心素养</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="tb-tag">八年级上册</span>第二章 中国的自然环境<br>第四节 地形与气候</td>
+                  <td>山地的垂直地域分异；地形对气候、植被的影响。</td>
+                  <td>利用迭部 1600—4920 米的巨大高差，引导学生识别从河谷到高山的植被变化，理解“一山有四季”的地理成因。</td>
+                  <td><span class="core-literacy">区域认知</span>：识别迭部山地垂直自然带的空间分异；<span class="core-literacy">综合思维</span>：分析高差对气候与植被的综合影响；<span class="core-literacy">地理实践力</span>：通过景观图观察垂直带谱变化。</td>
+                </tr>
+                <tr>
+                  <td><span class="tb-tag">八年级上册</span>第四章 中国的经济发展<br>第二节 农业</td>
+                  <td>农业区位因素；因地制宜发展农业。</td>
+                  <td>结合“迭部特产”模块，分析蕨麻猪（高山草甸放牧）、羊肚菌（林下经济）、中药材（高原气候）各自的农业区位优势，理解因地制宜的原则。</td>
+                  <td><span class="core-literacy">综合思维</span>：分析气候、地形对农业区位的影响；<span class="core-literacy">人地协调观</span>：理解因地制宜、合理利用自然条件的意义；<span class="core-literacy">区域认知</span>：认识迭部特色农业的空间分布。</td>
+                </tr>
+                <tr>
+                  <td><span class="tb-tag">七年级上册</span>第五章 居民与文化<br>第二节 城镇与乡村（聚落）</td>
+                  <td>聚落与自然环境的关系；城镇与乡村的景观差异；传统民居的地域特色。</td>
+                  <td>以扎尕那藏寨为例，观察榻板房“外不见木、内不见土”的建筑特征，分析其如何适应当地寒冷、多风、多雨雪的气候；对比城镇（电尕镇）与乡村（扎尕那村）的景观差异，理解聚落形态与自然环境、生产方式的关联。</td>
+                  <td><span class="core-literacy">人地协调观</span>：理解传统民居与自然环境的适应关系，认识乡村聚落与城镇聚落的人地互动差异；<span class="core-literacy">综合思维</span>：分析建筑特征与气候、地形、材料的关联，以及聚落形态与生产方式的关系；<span class="core-literacy">区域认知</span>：认识扎尕那乡村聚落与电尕镇城镇聚落的地域特色及空间差异。</td>
+                </tr>
+                <tr>
+                  <td><span class="tb-tag">乡土地理</span>行政区划认知</td>
+                  <td>家乡的行政区划构成；县政府驻地与乡镇分布。</td>
+                  <td>结合“迭部县行政区划”模块，让学生在地图上找到自己所在乡镇的位置，建立“县域—乡镇—村落”的空间层级认知。</td>
+                  <td><span class="core-literacy">区域认知</span>：建立县域—乡镇—村落的空间层级认知；<span class="core-literacy">地理实践力</span>：在地图上定位家乡所在乡镇；<span class="core-literacy">人地协调观</span>：理解乡镇驻地与河谷地形的依存关系。</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
 
-  <h2 class="section-title">五、迭部县行政区划</h2>
-  
-  <div class="admin-division-box">
-    <div class="admin-stats">
-      <div class="admin-stat-item"><div class="num">5</div><div class="lbl">镇</div></div>
-      <div class="admin-stat-item"><div class="num">6</div><div class="lbl">乡</div></div>
-      <div class="admin-stat-item"><div class="num">52</div><div class="lbl">行政村</div></div>
-      <div class="admin-stat-item"><div class="num">2</div><div class="lbl">社区</div></div>
+    <!-- 面板7：互动探究任务 -->
+    <div class="content-panel" id="panel-7">
+      <div class="panel-card">
+        <div class="panel-header">七、互动探究任务</div>
+        <div class="panel-body">
+          <div class="info-card" style="border-top-color: #f0c040;">
+            <h3>任务：找找你的家乡在哪里</h3>
+            <p>观察行政区划模块，迭部县共有 5 个镇、6 个乡。请在地图上找到你所在乡镇的大致位置（或扎尕那所在的益哇镇、俄界会议旧址所在的达拉乡）。说一说：你的家乡位于白龙江干流沿岸，还是在支流山谷中？</p>
+            <button class="task-btn" onclick="showTaskFeedback()">查看地理提示</button>
+            <div class="task-feedback" id="task-feedback">
+              <strong>地理提示：</strong>迭部的乡镇大多沿白龙江干流及其支流分布。电尕镇（县城）、卡坝乡、尼傲乡、旺藏镇、洛大镇等沿白龙江干流自西向东排列；益哇镇（含扎尕那）位于县城西北的益哇沟；达拉乡（含俄界村）位于县城东南的达拉沟。引导学生观察：乡镇驻地为什么多选在河谷地带？这与地形、水源、交通条件密切相关。
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <div class="admin-towns-grid">
-      <div class="admin-town-item"><span class="town-type zhen">镇</span> 电尕镇（县城驻地）</div>
-      <div class="admin-town-item"><span class="town-type zhen">镇</span> 益哇镇（扎尕那村所在）</div>
-      <div class="admin-town-item"><span class="town-type zhen">镇</span> 旺藏镇</div>
-      <div class="admin-town-item"><span class="town-type zhen">镇</span> 腊子口镇</div>
-      <div class="admin-town-item"><span class="town-type zhen">镇</span> 洛大镇</div>
-      <div class="admin-town-item"><span class="town-type xiang">乡</span> 卡坝乡</div>
-      <div class="admin-town-item"><span class="town-type xiang">乡</span> 达拉乡（俄界会议旧址所在）</div>
-      <div class="admin-town-item"><span class="town-type xiang">乡</span> 尼傲乡</div>
-      <div class="admin-town-item"><span class="town-type xiang">乡</span> 阿夏乡</div>
-      <div class="admin-town-item"><span class="town-type xiang">乡</span> 多儿乡</div>
-      <div class="admin-town-item"><span class="town-type xiang">乡</span> 桑坝乡</div>
-    </div>
-
-    <p class="admin-note">数据来源：迭部县人民政府（截至2026年）· 县人民政府驻电尕镇兴迭东街39号</p>
-
-    <div style="text-align: center; margin-top: 20px;">
-      <a href="towns.html" style="display: inline-block; background: #2c5f2d; color: #fff; text-decoration: none; padding: 10px 25px; border-radius: 20px; font-size: 14px; font-weight: bold; box-shadow: 0 3px 8px rgba(44,95,45,0.3);">
-        🏘️ 点击查看 11 个乡镇（镇/乡）详情介绍 →
-      </a>
-    </div>
-  </div>
-
-  <h2 class="section-title">六、教材链接与课标对应</h2>
-
-  <div class="textbook-link-box">
-    <table class="textbook-table">
-      <thead>
-        <tr>
-          <th style="width: 20%;">对应教材章节</th>
-          <th style="width: 28%;">核心知识点</th>
-          <th style="width: 30%;">本页面的教学切入点（迭部案例）</th>
-          <th style="width: 22%;">核心素养</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><span class="tb-tag">八年级上册</span>第二章 中国的自然环境<br>第四节 地形与气候</td>
-          <td>山地的垂直地域分异；地形对气候、植被的影响。</td>
-          <td>利用迭部 1600—4920 米的巨大高差，引导学生识别从河谷到高山的植被变化，理解“一山有四季”的地理成因。</td>
-          <td><span class="core-literacy">区域认知</span>：识别迭部山地垂直自然带的空间分异；<span class="core-literacy">综合思维</span>：分析高差对气候与植被的综合影响；<span class="core-literacy">地理实践力</span>：通过景观图观察垂直带谱变化。</td>
-        </tr>
-        <tr>
-          <td><span class="tb-tag">八年级上册</span>第四章 中国的经济发展<br>第二节 农业</td>
-          <td>农业区位因素；因地制宜发展农业。</td>
-          <td>结合“迭部特产”模块，分析蕨麻猪（高山草甸放牧）、羊肚菌（林下经济）、中药材（高原气候）各自的农业区位优势，理解因地制宜的原则。</td>
-          <td><span class="core-literacy">综合思维</span>：分析气候、地形对农业区位的影响；<span class="core-literacy">人地协调观</span>：理解因地制宜、合理利用自然条件的意义；<span class="core-literacy">区域认知</span>：认识迭部特色农业的空间分布。</td>
-        </tr>
-        <tr>
-          <td><span class="tb-tag">七年级上册</span>第五章 居民与文化<br>第二节 城镇与乡村（聚落）</td>
-          <td>聚落与自然环境的关系；城镇与乡村的景观差异；传统民居的地域特色。</td>
-          <td>以扎尕那藏寨为例，观察榻板房“外不见木、内不见土”的建筑特征，分析其如何适应当地寒冷、多风、多雨雪的气候；对比城镇（电尕镇）与乡村（扎尕那村）的景观差异，理解聚落形态与自然环境、生产方式的关联。</td>
-          <td><span class="core-literacy">人地协调观</span>：理解传统民居与自然环境的适应关系，认识乡村聚落与城镇聚落的人地互动差异；<span class="core-literacy">综合思维</span>：分析建筑特征与气候、地形、材料的关联，以及聚落形态与生产方式的关系；<span class="core-literacy">区域认知</span>：认识扎尕那乡村聚落与电尕镇城镇聚落的地域特色及空间差异。</td>
-        </tr>
-        <tr>
-          <td><span class="tb-tag">乡土地理</span>行政区划认知</td>
-          <td>家乡的行政区划构成；县政府驻地与乡镇分布。</td>
-          <td>结合“迭部县行政区划”模块，让学生在地图上找到自己所在乡镇的位置，建立“县域—乡镇—村落”的空间层级认知。</td>
-          <td><span class="core-literacy">区域认知</span>：建立县域—乡镇—村落的空间层级认知；<span class="core-literacy">地理实践力</span>：在地图上定位家乡所在乡镇；<span class="core-literacy">人地协调观</span>：理解乡镇驻地与河谷地形的依存关系。</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <h2 class="section-title">七、互动探究任务</h2>
-
-  <div class="info-card" style="border-top-color: #f0c040;">
-    <h3>任务：找找你的家乡在哪里</h3>
-    <p>观察行政区划模块，迭部县共有 5 个镇、6 个乡。请在地图上找到你所在乡镇的大致位置（或扎尕那所在的益哇镇、俄界会议旧址所在的达拉乡）。说一说：你的家乡位于白龙江干流沿岸，还是在支流山谷中？</p>
-    <button class="task-btn" onclick="showTaskFeedback()">查看地理提示</button>
-    <div class="task-feedback" id="task-feedback">
-      <strong>地理提示：</strong>迭部的乡镇大多沿白龙江干流及其支流分布。电尕镇（县城）、卡坝乡、尼傲乡、旺藏镇、洛大镇等沿白龙江干流自西向东排列；益哇镇（含扎尕那）位于县城西北的益哇沟；达拉乡（含俄界村）位于县城东南的达拉沟。引导学生观察：乡镇驻地为什么多选在河谷地带？这与地形、水源、交通条件密切相关。
-    </div>
-  </div>
-
-</main>
+  </div><!-- /content-area -->
+</div><!-- /page-layout -->
 
 <footer>
   数据来源：迭部县人民政府、甘南州统计公报、联合国粮农组织 · 教学用途网站
@@ -455,161 +653,199 @@
 
 <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-  // ===== 1. 初始化地图 =====
-  var map = L.map('county-map').setView([34.08, 103.25], 10);
+  (function() {
+    // ---------- 左侧导航切换 ----------
+    var navButtons = document.querySelectorAll('.side-nav button');
+    var panels = document.querySelectorAll('.content-panel');
 
-  // ===== 2. 高德中文街道底图 =====
-  var streetLayer = L.tileLayer(
-    'https://webrd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}',
-    {
-      subdomains: ['1', '2', '3', '4'],
-      attribution: '&copy; 高德地图',
-      maxZoom: 18
+    function switchPanel(targetId) {
+      panels.forEach(function(p) { p.classList.remove('active'); });
+      var target = document.getElementById(targetId);
+      if (target) target.classList.add('active');
+      navButtons.forEach(function(btn) {
+        btn.classList.toggle('active', btn.dataset.target === targetId);
+      });
+      if (window.innerWidth <= 900) {
+        var contentArea = document.querySelector('.content-area');
+        if (contentArea) {
+          var offsetTop = contentArea.getBoundingClientRect().top + window.pageYOffset - 60;
+          window.scrollTo({ top: offsetTop, behavior: 'smooth' });
+        }
+      }
     }
-  );
 
-  // ===== 3. 高德卫星影像底图 =====
-  var satelliteLayer = L.tileLayer(
-    'https://webst0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=6&x={x}&y={y}&z={z}',
-    {
-      subdomains: ['1', '2', '3', '4'],
-      attribution: '&copy; 高德地图',
-      maxZoom: 18
+    navButtons.forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var targetId = btn.dataset.target;
+        if (targetId) switchPanel(targetId);
+      });
+    });
+
+    if (!document.querySelector('.content-panel.active') && panels.length > 0) {
+      panels[0].classList.add('active');
     }
-  );
+    if (navButtons.length > 0 && !document.querySelector('.side-nav button.active')) {
+      navButtons[0].classList.add('active');
+    }
 
-  streetLayer.addTo(map);
+    // ---------- 地图初始化 ----------
+    var map = L.map('county-map').setView([34.08, 103.25], 10);
 
-  // ===== 4. 图层切换 =====
-  L.control.layers(
-    { "中文街道图": streetLayer, "卫星影像": satelliteLayer },
-    null,
-    { position: 'topright' }
-  ).addTo(map);
+    var streetLayer = L.tileLayer(
+      'https://webrd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}',
+      {
+        subdomains: ['1', '2', '3', '4'],
+        attribution: '&copy; 高德地图',
+        maxZoom: 18
+      }
+    );
 
-  // ===== 5. 白龙江水系（GeoJSON 加载）=====
-  var riverLayer = null;
-  var riverLabels = [];   // 保存河流名称永久注记，便于随缩放控制显示
+    var satelliteLayer = L.tileLayer(
+      'https://webst0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=6&x={x}&y={y}&z={z}',
+      {
+        subdomains: ['1', '2', '3', '4'],
+        attribution: '&copy; 高德地图',
+        maxZoom: 18
+      }
+    );
 
-  fetch('bailongjiang_network.geojson')
-    .then(function(res) { return res.json(); })
-    .then(function(geojson) {
-      riverLayer = L.geoJSON(geojson, {
-        style: function(feature) {
-          var isRiver = feature.properties.waterway === 'river';
-          return {
-            color: isRiver ? '#1565c0' : '#4fa3e3',
-            weight: isRiver ? 6 : 3,
-            opacity: isRiver ? 0.95 : 0.8
-          };
-        },
-        onEachFeature: function(feature, layer) {
-          var name = feature.properties.name || '无名支流';
-          var isRiver = feature.properties.waterway === 'river';
-          var type = isRiver ? '白龙江干流' : '白龙江支流';
+    streetLayer.addTo(map);
 
-          // 悬停提示
-          layer.bindTooltip(name, { permanent: false, direction: 'top' });
+    L.control.layers(
+      { "中文街道图": streetLayer, "卫星影像": satelliteLayer },
+      null,
+      { position: 'topright' }
+    ).addTo(map);
 
-          // 点击弹窗
-          layer.bindPopup(
-            '<b>' + name + '</b><br>' +
-            '<span style="font-size:12px; color:#555;">类型：' + type + '</span>'
-          );
+    // ---------- 白龙江水系 ----------
+    var riverLayer = null;
+    var riverLabels = [];
 
-          // 为有名称的河流添加永久注记（取线段中点）
-          if (feature.properties.name) {
-            var coords = feature.geometry.coordinates;
-            var mid = coords[Math.floor(coords.length / 2)];
-            var labelColor = isRiver ? 'rgba(21,101,192,.92)' : 'rgba(79,163,227,.92)';
-            var label = L.marker([mid[1], mid[0]], {
-              icon: L.divIcon({
-                className: 'river-label-marker',
-                html: '<div style="background:' + labelColor + ';color:#fff;font-size:11px;' +
-                      'font-weight:' + (isRiver ? 'bold' : 'normal') + ';padding:1px 8px;border-radius:10px;' +
-                      'white-space:nowrap;box-shadow:0 1px 4px rgba(0,0,0,.25);border:1px solid #fff;">' +
-                      name + '</div>',
-                iconSize: [0, 0],
-                iconAnchor: [0, 0]
-              }),
-              interactive: false
-            });
-            riverLabels.push({ marker: label, isRiver: isRiver, name: name });
-            label.addTo(map);
+    fetch('bailongjiang_network.geojson')
+      .then(function(res) { return res.json(); })
+      .then(function(geojson) {
+        riverLayer = L.geoJSON(geojson, {
+          style: function(feature) {
+            var isRiver = feature.properties.waterway === 'river';
+            return {
+              color: isRiver ? '#1565c0' : '#4fa3e3',
+              weight: isRiver ? 6 : 3,
+              opacity: isRiver ? 0.95 : 0.8
+            };
+          },
+          onEachFeature: function(feature, layer) {
+            var name = feature.properties.name || '无名支流';
+            var isRiver = feature.properties.waterway === 'river';
+            var type = isRiver ? '白龙江干流' : '白龙江支流';
+
+            layer.bindTooltip(name, { permanent: false, direction: 'top' });
+            layer.bindPopup(
+              '<b>' + name + '</b><br>' +
+              '<span style="font-size:12px; color:#555;">类型：' + type + '</span>'
+            );
+
+            if (feature.properties.name) {
+              var coords = feature.geometry.coordinates;
+              var mid = coords[Math.floor(coords.length / 2)];
+              var labelColor = isRiver ? 'rgba(21,101,192,.92)' : 'rgba(79,163,227,.92)';
+              var label = L.marker([mid[1], mid[0]], {
+                icon: L.divIcon({
+                  className: 'river-label-marker',
+                  html: '<div style="background:' + labelColor + ';color:#fff;font-size:11px;' +
+                        'font-weight:' + (isRiver ? 'bold' : 'normal') + ';padding:1px 8px;border-radius:10px;' +
+                        'white-space:nowrap;box-shadow:0 1px 4px rgba(0,0,0,.25);border:1px solid #fff;">' +
+                        name + '</div>',
+                  iconSize: [0, 0],
+                  iconAnchor: [0, 0]
+                }),
+                interactive: false
+              });
+              riverLabels.push({ marker: label, isRiver: isRiver, name: name });
+              label.addTo(map);
+            }
+          }
+        }).addTo(map);
+
+        if (riverLayer) riverLayer.bringToFront();
+
+        try {
+          map.fitBounds(riverLayer.getBounds(), { padding: [20, 20] });
+        } catch (e) {}
+      })
+      .catch(function(err) {
+        console.error('白龙江水系 GeoJSON 加载失败：', err);
+      });
+
+    // ---------- 自定义红色标记 ----------
+    function createRedMarker(labelText) {
+      return L.divIcon({
+        className: 'custom-red-marker',
+        html: '<div class="marker-pin"></div>' +
+              '<div class="marker-label">' + labelText + '</div>',
+        iconSize: [28, 28],
+        iconAnchor: [14, 28],
+        popupAnchor: [0, -28]
+      });
+    }
+
+    var zhaganaMarker = L.marker([34.23, 103.20], {
+      icon: createRedMarker('扎尕那村 · 益哇镇')
+    }).addTo(map);
+    zhaganaMarker.bindPopup(`
+      <b>扎尕那村（益哇镇）</b><br>
+      <span style="font-size:12px; color:#555;">全球重要农业文化遗产（GIAHS），世界最佳旅游乡村。</span><br>
+      <span style="font-size:12px; color:#2c5f2d; font-weight:bold;">行政归属：益哇镇管辖，是迭部县52个行政村之一。</span>
+    `);
+
+    var countySeat = L.marker([34.05, 103.22], {
+      icon: createRedMarker('电尕镇 · 县城驻地')
+    }).addTo(map);
+    countySeat.bindPopup(`
+      <b>电尕镇（迭部县城）</b><br>
+      <span style="font-size:12px; color:#555;">全县政治、经济、文化中心，县政府驻地。</span><br>
+      <span style="font-size:12px; color:#2c5f2d; font-weight:bold;">地理视角：典型的河谷城镇，依托白龙江水源和交通干线发展。</span>
+    `);
+
+    L.control.scale({ metric: true, imperial: false }).addTo(map);
+
+    map.on('zoomend', function() {
+      var currentZoom = map.getZoom();
+      var scaleLabel = document.getElementById('scale-label');
+
+      if (currentZoom < 9) {
+        scaleLabel.innerText = "迭部县域宏观视角";
+        scaleLabel.style.color = "#2c5f2d";
+      } else if (currentZoom >= 9 && currentZoom < 11) {
+        scaleLabel.innerText = "白龙江流域/乡镇尺度";
+        scaleLabel.style.color = "#4fa3e3";
+      } else {
+        scaleLabel.innerText = "扎尕那村落微观视角";
+        scaleLabel.style.color = "#8a2b1d";
+        map.panTo([34.23, 103.20]);
+        zhaganaMarker.openPopup();
+      }
+    });
+
+    window.showTaskFeedback = function() {
+      var feedbackDiv = document.getElementById('task-feedback');
+      if (feedbackDiv) {
+        feedbackDiv.style.display = feedbackDiv.style.display === 'block' ? 'none' : 'block';
+      }
+    };
+
+    // 地图在面板显示后需要重新计算尺寸
+    var mapPanel = document.getElementById('panel-1');
+    var observer = new MutationObserver(function(mutations) {
+      mutations.forEach(function(m) {
+        if (m.attributeName === 'class') {
+          if (mapPanel.classList.contains('active')) {
+            setTimeout(function() { map.invalidateSize(); }, 100);
           }
         }
-      }).addTo(map);
-
-      // 将水系图层置于其他标注之下、底图之上
-      if (riverLayer) riverLayer.bringToFront();
-
-      // 调整视野以完整显示水系
-      try {
-        map.fitBounds(riverLayer.getBounds(), { padding: [20, 20] });
-      } catch (e) {}
-    })
-    .catch(function(err) {
-      console.error('白龙江水系 GeoJSON 加载失败：', err);
+      });
     });
-
-  // ===== 6. 自定义红色标记图标 =====
-  function createRedMarker(labelText) {
-    return L.divIcon({
-      className: 'custom-red-marker',
-      html: '<div class="marker-pin"></div>' +
-            '<div class="marker-label">' + labelText + '</div>',
-      iconSize: [28, 28],
-      iconAnchor: [14, 28],
-      popupAnchor: [0, -28]
-    });
-  }
-
-  // ===== 7. 两个红色点位（带旁注）=====
-  var zhaganaMarker = L.marker([34.23, 103.20], {
-    icon: createRedMarker('扎尕那村 · 益哇镇')
-  }).addTo(map);
-  zhaganaMarker.bindPopup(`
-    <b>扎尕那村（益哇镇）</b><br>
-    <span style="font-size:12px; color:#555;">全球重要农业文化遗产（GIAHS），世界最佳旅游乡村。</span><br>
-    <span style="font-size:12px; color:#2c5f2d; font-weight:bold;">行政归属：益哇镇管辖，是迭部县52个行政村之一。</span>
-  `);
-
-  var countySeat = L.marker([34.05, 103.22], {
-    icon: createRedMarker('电尕镇 · 县城驻地')
-  }).addTo(map);
-  countySeat.bindPopup(`
-    <b>电尕镇（迭部县城）</b><br>
-    <span style="font-size:12px; color:#555;">全县政治、经济、文化中心，县政府驻地。</span><br>
-    <span style="font-size:12px; color:#2c5f2d; font-weight:bold;">地理视角：典型的河谷城镇，依托白龙江水源和交通干线发展。</span>
-  `);
-
-  // ===== 8. 比例尺 =====
-  L.control.scale({ metric: true, imperial: false }).addTo(map);
-
-  // ===== 9. 缩放联动尺度标签 =====
-  map.on('zoomend', function() {
-    var currentZoom = map.getZoom();
-    var scaleLabel = document.getElementById('scale-label');
-
-    if (currentZoom < 9) {
-      scaleLabel.innerText = "迭部县域宏观视角";
-      scaleLabel.style.color = "#2c5f2d";
-    } else if (currentZoom >= 9 && currentZoom < 11) {
-      scaleLabel.innerText = "白龙江流域/乡镇尺度";
-      scaleLabel.style.color = "#4fa3e3";
-    } else {
-      scaleLabel.innerText = "扎尕那村落微观视角";
-      scaleLabel.style.color = "#8a2b1d";
-      map.panTo([34.23, 103.20]);
-      zhaganaMarker.openPopup();
-    }
-  });
-
-  // ===== 10. 互动任务按钮 =====
-  function showTaskFeedback() {
-    var feedbackDiv = document.getElementById('task-feedback');
-    feedbackDiv.style.display = feedbackDiv.style.display === 'block' ? 'none' : 'block';
-  }
+    observer.observe(mapPanel, { attributes: true });
+  })();
 </script>
 </body>
 </html>
